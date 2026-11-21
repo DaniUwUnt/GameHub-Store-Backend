@@ -1,0 +1,58 @@
+server:
+  port: ${PORT:8087}
+  address: ${SERVER_ADDRESS:0.0.0.0}
+
+spring:
+  profiles:
+    default: mysql
+  application:
+    name: order-service
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+  datasource:
+    url: jdbc:h2:mem:ordenes;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+    registry-fetch-interval-seconds: 5
+  instance:
+    hostname: ${EUREKA_HOSTNAME:localhost}
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+
+app:
+  jwt:
+    secreto: ${JWT_SECRETO}
+  clave-interna: ${CLAVE_INTERNA}
+  datos-iniciales: ${DATOS_INICIALES:false}
+  docs:
+    descripcion: Carrito, órdenes y bandeja del operador. Coordina product-service, inventory-service, promotion-service, payment-service y shipping-service.
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+springdoc:
+  paths-to-match: /api/v1/**
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha

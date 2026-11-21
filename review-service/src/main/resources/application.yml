@@ -1,0 +1,61 @@
+server:
+  port: ${PORT:8090}
+  address: ${SERVER_ADDRESS:0.0.0.0}
+
+spring:
+  profiles:
+    default: mysql
+  application:
+    name: review-service
+  # H2 se utiliza en las pruebas Maven. El perfil predeterminado mysql sustituye estos valores.
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+  datasource:
+    url: jdbc:h2:mem:resenas;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          # Si otro servicio no responde en este tiempo, la llamada falla con 503 en vez de colgarse
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+    registry-fetch-interval-seconds: 5
+  instance:
+    hostname: ${EUREKA_HOSTNAME:localhost}
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+
+app:
+  jwt:
+    # El mismo secreto en los 11 servicios: auth-service firma y los demás validan
+    secreto: ${JWT_SECRETO}
+  clave-interna: ${CLAVE_INTERNA}
+  datos-iniciales: ${DATOS_INICIALES:false}
+  docs:
+    descripcion: Reseñas de productos. La tienda muestra solo las aprobadas; el cliente reseña lo que recibió y el administrador las modera.
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+springdoc:
+  paths-to-match: /api/v1/**
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha

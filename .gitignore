@@ -1,0 +1,13 @@
+target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.log
+.env
+
+# Datos, procesos y configuración local
+datos/
+.runtime/
+.env.*
+!.env.example

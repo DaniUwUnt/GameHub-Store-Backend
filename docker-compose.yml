@@ -1,0 +1,177 @@
+name: gamehub-ep3
+
+x-java: &java
+  image: gamehub-ep3:local
+  pull_policy: never
+  restart: unless-stopped
+
+x-servicio: &servicio
+  <<: *java
+  depends_on:
+    mysql:
+      condition: service_healthy
+    eureka-server:
+      condition: service_healthy
+  healthcheck:
+    test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:$$PORT/actuator/health | grep -q UP"]
+    interval: 6s
+    timeout: 4s
+    retries: 45
+    start_period: 20s
+
+x-entorno: &entorno
+  DB_HOST: mysql
+  DB_PORT: 3306
+  DB_USUARIO: gamehub
+  DB_CLAVE: ${DB_CLAVE:?Ejecuta scripts/preparar-demo}
+  # Solo en el entorno de trabajo aislado de Compose. Fuera de Compose el perfil exige TLS.
+  DB_SSL_MODE: DISABLED
+  DB_PUBLIC_KEY: "true"
+  SPRING_PROFILES_ACTIVE: mysql
+  DATOS_INICIALES: "true"
+  JWT_SECRETO: ${JWT_SECRETO:?Ejecuta scripts/preparar-demo}
+  CLAVE_INTERNA: ${CLAVE_INTERNA:?Ejecuta scripts/preparar-demo}
+  EUREKA_URL: http://eureka-server:8761/eureka
+  TZ: America/Santiago
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Ejecuta scripts/preparar-demo}
+      MYSQL_DATABASE: gh_auth
+      MYSQL_USER: gamehub
+      MYSQL_PASSWORD: ${DB_CLAVE:?Ejecuta scripts/preparar-demo}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/01-esquemas.sh:/docker-entrypoint-initdb.d/01-esquemas.sh:ro
+    healthcheck:
+      # TCP evita responder en la fase temporal, antes de crear los esquemas.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 6s
+      timeout: 4s
+      retries: 35
+
+  eureka-server:
+    <<: *java
+    build: .
+    environment:
+      MODULO: eureka-server
+      EUREKA_HOSTNAME: eureka-server
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8761/actuator/health"]
+      interval: 6s
+      timeout: 4s
+      retries: 35
+
+  auth-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: auth-service
+      EUREKA_HOSTNAME: auth-service
+      PORT: 8081
+      CLAVE_DEMO: ${CLAVE_DEMO:?Ejecuta scripts/preparar-demo}
+
+  user-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: user-service
+      EUREKA_HOSTNAME: user-service
+      PORT: 8082
+
+  category-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: category-service
+      EUREKA_HOSTNAME: category-service
+      PORT: 8083
+
+  product-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: product-service
+      EUREKA_HOSTNAME: product-service
+      PORT: 8084
+
+  inventory-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: inventory-service
+      EUREKA_HOSTNAME: inventory-service
+      PORT: 8085
+
+  promotion-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: promotion-service
+      EUREKA_HOSTNAME: promotion-service
+      PORT: 8086
+
+  order-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: order-service
+      EUREKA_HOSTNAME: order-service
+      PORT: 8087
+
+  payment-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: payment-service
+      EUREKA_HOSTNAME: payment-service
+      PORT: 8088
+
+  shipping-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: shipping-service
+      EUREKA_HOSTNAME: shipping-service
+      PORT: 8089
+
+  review-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: review-service
+      EUREKA_HOSTNAME: review-service
+      PORT: 8090
+
+  warranty-service:
+    <<: *servicio
+    environment:
+      <<: *entorno
+      MODULO: warranty-service
+      EUREKA_HOSTNAME: warranty-service
+      PORT: 8091
+
+  api-gateway:
+    <<: *java
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+    environment:
+      MODULO: api-gateway
+      EUREKA_URL: http://eureka-server:8761/eureka
+      EUREKA_HOSTNAME: api-gateway
+      CORS_ORIGENES: ${CORS_ORIGENES:-http://localhost:5173,http://127.0.0.1:5173}
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT:-8080}:8080"
+
+volumes:
+  mysql-data:

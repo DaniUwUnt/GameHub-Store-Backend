@@ -1,0 +1,9 @@
+.git
+**/target
+**/node_modules
+.env
+*.log
+.idea
+.env.*
+datos/
+.runtime/
