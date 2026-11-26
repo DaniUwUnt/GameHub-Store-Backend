@@ -22,7 +22,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(reglas -> {
             SeguridadBase.rutasAbiertas(reglas);
             // Cualquier rol con sesión: cada uno ve y cambia solo su propio perfil
-            reglas.requestMatchers("/api/v1/usuarios/**").hasAnyRole("CLIENTE", "ADMIN")
+            reglas.requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/contacto").permitAll()
+                  .requestMatchers("/api/v1/admin/contacto").hasRole("ADMIN")
+                  .requestMatchers("/api/v1/usuarios/**").hasAnyRole("CLIENTE", "ADMIN")
                   .anyRequest().authenticated();
         });
         return http.build();

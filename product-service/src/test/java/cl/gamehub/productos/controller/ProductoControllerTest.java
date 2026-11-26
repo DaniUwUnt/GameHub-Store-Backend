@@ -141,11 +141,11 @@ class ProductoControllerTest {
     @Test
     void unaSolicitudInvalidaResponde400ConElCampo() throws Exception {
         String cuerpo = """
-                {"sku": "KB-NIM-MINI", "nombre": "Teclado Nimbo Mini", "marca": "Nimbo", "categoriaId": 4, "precio": 0}""";
+                {"sku": "KB-NIM-MINI", "nombre": "Teclado Nimbo Mini", "marca": "Nimbo", "categoriaId": 4, "precio": -1}""";
         mvc.perform(post("/api/v1/admin/productos").header("Authorization", token(Rol.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON).content(cuerpo))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errores.precio").value("El precio debe ser mayor que cero."));
+                .andExpect(jsonPath("$.errores.precio").value("El precio no puede ser negativo."));
     }
 
     @Test
@@ -227,6 +227,6 @@ class ProductoControllerTest {
     }
 
     private String token(Rol rol) {
-        return "Bearer " + jwt.generar(1L, "prueba@gamehub.test", "Prueba", rol);
+        return "Bearer " + jwt.generar(1L, "prueba.levelup@duoc.cl", "Prueba", rol);
     }
 }

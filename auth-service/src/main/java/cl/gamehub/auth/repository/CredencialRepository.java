@@ -17,6 +17,8 @@ public interface CredencialRepository extends JpaRepository<Credencial, Long> {
     @Query("select c from Credencial c where c.id = :id")
     Optional<Credencial> bloquearPorId(@Param("id") Long id);
 
+    boolean existsByRun(String run);
+
     boolean existsByEmailIgnoreCase(String email);
 
     /** Para el panel de administración: por rol (ADMIN, CLIENTE, VENDEDOR) y, dentro de cada rol, por nombre. */

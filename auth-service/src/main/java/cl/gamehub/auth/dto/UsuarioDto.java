@@ -7,6 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record UsuarioDto(
         @Schema(example = "3") Long id,
         @Schema(example = "Camila Rojas") String nombre,
-        @Schema(example = "camila@gamehub.test") String email,
+        @Schema(example = "camila.levelup@duoc.cl") String email,
         @Schema(example = "CLIENTE") Rol rol) {
 }

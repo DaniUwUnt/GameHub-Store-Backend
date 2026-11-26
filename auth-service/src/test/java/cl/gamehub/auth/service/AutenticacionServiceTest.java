@@ -63,26 +63,26 @@ class AutenticacionServiceTest {
     @Test
     void loginEntregaElTokenYLosDatosDeLaCuenta() {
         // Given: la cuenta de Camila existe, está activa y la contraseña calza con su hash
-        when(credenciales.findByEmailIgnoreCase("camila@gamehub.test"))
-                .thenReturn(Optional.of(credencial(3L, "Camila Rojas", "camila@gamehub.test", Rol.CLIENTE, true)));
+        when(credenciales.findByEmailIgnoreCase("camila.levelup@duoc.cl"))
+                .thenReturn(Optional.of(credencial(3L, "Camila Rojas", "camila.levelup@duoc.cl", Rol.CLIENTE, true)));
         when(codificador.matches("clave123", "hash")).thenReturn(true);
-        when(jwtServicio.generar(3L, "camila@gamehub.test", "Camila Rojas", Rol.CLIENTE)).thenReturn("token-camila");
+        when(jwtServicio.generar(3L, "camila.levelup@duoc.cl", "Camila Rojas", Rol.CLIENTE)).thenReturn("token-camila");
 
         // When: el correo llega con espacios alrededor
-        SesionRespuesta sesion = servicio.iniciarSesion(new LoginSolicitud(" camila@gamehub.test ", "clave123"));
+        SesionRespuesta sesion = servicio.iniciarSesion(new LoginSolicitud(" camila.levelup@duoc.cl ", "clave123"));
 
         // Then
         assertThat(sesion.token()).isEqualTo("token-camila");
-        assertThat(sesion.usuario()).isEqualTo(new UsuarioDto(3L, "Camila Rojas", "camila@gamehub.test", Rol.CLIENTE));
+        assertThat(sesion.usuario()).isEqualTo(new UsuarioDto(3L, "Camila Rojas", "camila.levelup@duoc.cl", Rol.CLIENTE));
     }
 
     @Test
     void unCorreoSinCuentaResponde401() {
         // Given
-        when(credenciales.findByEmailIgnoreCase("nadie@gamehub.test")).thenReturn(Optional.empty());
+        when(credenciales.findByEmailIgnoreCase("nadie.levelup@duoc.cl")).thenReturn(Optional.empty());
 
         // When / Then: el mensaje no dice si falló el correo o la contraseña
-        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginSolicitud("nadie@gamehub.test", "clave123")))
+        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginSolicitud("nadie.levelup@duoc.cl", "clave123")))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("Correo o contraseña incorrectos.")
                 .extracting(e -> ((ApiException) e).getEstado()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -92,12 +92,12 @@ class AutenticacionServiceTest {
     @Test
     void unaClaveIncorrectaResponde401() {
         // Given: la cuenta existe pero BCrypt dice que la contraseña no calza
-        when(credenciales.findByEmailIgnoreCase("camila@gamehub.test"))
-                .thenReturn(Optional.of(credencial(3L, "Camila Rojas", "camila@gamehub.test", Rol.CLIENTE, true)));
-        when(codificador.matches("otra-clave1", "hash")).thenReturn(false);
+        when(credenciales.findByEmailIgnoreCase("camila.levelup@duoc.cl"))
+                .thenReturn(Optional.of(credencial(3L, "Camila Rojas", "camila.levelup@duoc.cl", Rol.CLIENTE, true)));
+        when(codificador.matches("otra1234", "hash")).thenReturn(false);
 
         // When / Then
-        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginSolicitud("camila@gamehub.test", "otra-clave1")))
+        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginSolicitud("camila.levelup@duoc.cl", "otra1234")))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("Correo o contraseña incorrectos.");
         verifyNoInteractions(jwtServicio);
@@ -106,12 +106,12 @@ class AutenticacionServiceTest {
     @Test
     void unaCuentaDesactivadaResponde403AunqueLaClaveCalce() {
         // Given: Pedro está desactivado
-        when(credenciales.findByEmailIgnoreCase("pedro@gamehub.test"))
-                .thenReturn(Optional.of(credencial(4L, "Pedro Díaz", "pedro@gamehub.test", Rol.CLIENTE, false)));
+        when(credenciales.findByEmailIgnoreCase("pedro.levelup@duoc.cl"))
+                .thenReturn(Optional.of(credencial(4L, "Pedro Díaz", "pedro.levelup@duoc.cl", Rol.CLIENTE, false)));
         when(codificador.matches("clave123", "hash")).thenReturn(true);
 
         // When / Then
-        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginSolicitud("pedro@gamehub.test", "clave123")))
+        assertThatThrownBy(() -> servicio.iniciarSesion(new LoginSolicitud("pedro.levelup@duoc.cl", "clave123")))
                 .isInstanceOf(ApiException.class)
                 .hasMessage(DESACTIVADA)
                 .extracting(e -> ((ApiException) e).getEstado()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -123,40 +123,40 @@ class AutenticacionServiceTest {
     @Test
     void registrarGuardaUnClienteYLePideElPerfilAUserService() {
         // Given: el correo está libre y la base le asigna el id 18 a la credencial
-        when(credenciales.existsByEmailIgnoreCase("rocio@gamehub.test")).thenReturn(false);
+        when(credenciales.existsByEmailIgnoreCase("rocio.levelup@duoc.cl")).thenReturn(false);
         when(codificador.encode("clave1234")).thenReturn("hash-nuevo");
         when(credenciales.save(any(Credencial.class))).thenAnswer(i -> {
             Credencial guardada = i.getArgument(0);
             ReflectionTestUtils.setField(guardada, "id", 18L);
             return guardada;
         });
-        when(jwtServicio.generar(18L, "rocio@gamehub.test", "Rocío Navarro", Rol.CLIENTE)).thenReturn("token-nuevo");
+        when(jwtServicio.generar(18L, "rocio.levelup@duoc.cl", "Rocío Navarro", Rol.CLIENTE)).thenReturn("token-nuevo");
 
         // When: el correo viene con mayúsculas y el nombre con espacios
-        SesionRespuesta sesion = servicio.registrar(registro(" Rocio@GameHub.test "));
+        SesionRespuesta sesion = servicio.registrar(registro(" Rocio.levelup@duoc.cl "));
 
         // Then: la cuenta queda como CLIENTE, con el correo en minúsculas y solo el hash de la contraseña
         ArgumentCaptor<Credencial> captor = ArgumentCaptor.forClass(Credencial.class);
         verify(credenciales).save(captor.capture());
         Credencial guardada = captor.getValue();
         assertThat(guardada.getRol()).isEqualTo(Rol.CLIENTE);
-        assertThat(guardada.getEmail()).isEqualTo("rocio@gamehub.test");
+        assertThat(guardada.getEmail()).isEqualTo("rocio.levelup@duoc.cl");
         assertThat(guardada.getClaveHash()).isEqualTo("hash-nuevo");
         assertThat(guardada.isActivo()).isTrue();
         // y user-service recibe el perfil con el mismo id que la credencial
-        verify(perfiles).crearPerfil(new NuevoPerfilSolicitud(18L, "Rocío Navarro", "rocio@gamehub.test",
+        verify(perfiles).crearPerfil(new NuevoPerfilSolicitud(18L, "Rocío Navarro", "rocio.levelup@duoc.cl",
                 "987654321", DatosDeEjemplo.RM, "Ñuñoa", "Av. Irarrázaval 3400"));
         assertThat(sesion.token()).isEqualTo("token-nuevo");
-        assertThat(sesion.usuario()).isEqualTo(new UsuarioDto(18L, "Rocío Navarro", "rocio@gamehub.test", Rol.CLIENTE));
+        assertThat(sesion.usuario()).isEqualTo(new UsuarioDto(18L, "Rocío Navarro", "rocio.levelup@duoc.cl", Rol.CLIENTE));
     }
 
     @Test
     void registrarRechazaUnCorreoQueYaTieneCuenta() {
         // Given
-        when(credenciales.existsByEmailIgnoreCase("camila@gamehub.test")).thenReturn(true);
+        when(credenciales.existsByEmailIgnoreCase("camila.levelup@duoc.cl")).thenReturn(true);
 
         // When / Then: no se guarda nada ni se llama a user-service
-        assertThatThrownBy(() -> servicio.registrar(registro("Camila@gamehub.test")))
+        assertThatThrownBy(() -> servicio.registrar(registro("Camila.levelup@duoc.cl")))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("Ya existe una cuenta con ese correo. Inicia sesión o usa otro.")
                 .extracting(e -> ((ApiException) e).getEstado()).isEqualTo(HttpStatus.CONFLICT);
@@ -167,7 +167,7 @@ class AutenticacionServiceTest {
     @Test
     void siUserServiceFallaElErrorSaleDelRegistro() {
         // Given: user-service responde con error (Feign lo convierte en ApiException)
-        when(credenciales.existsByEmailIgnoreCase("rocio@gamehub.test")).thenReturn(false);
+        when(credenciales.existsByEmailIgnoreCase("rocio.levelup@duoc.cl")).thenReturn(false);
         when(codificador.encode("clave1234")).thenReturn("hash-nuevo");
         when(credenciales.save(any(Credencial.class))).thenAnswer(i -> i.getArgument(0));
         ApiException caido = ApiException.noDisponible("Uno de los servicios de la tienda no responde.");
@@ -175,7 +175,7 @@ class AutenticacionServiceTest {
 
         // When / Then: la excepción sale del método, así @Transactional revierte la credencial
         // (el rollback real se prueba en AutenticacionControllerTest)
-        assertThatThrownBy(() -> servicio.registrar(registro("rocio@gamehub.test"))).isSameAs(caido);
+        assertThatThrownBy(() -> servicio.registrar(registro("rocio.levelup@duoc.cl"))).isSameAs(caido);
         verifyNoInteractions(jwtServicio);
     }
 
@@ -185,8 +185,8 @@ class AutenticacionServiceTest {
     void renovarEntregaUnTokenNuevoConLosDatosGuardados() {
         // Given
         when(credenciales.findById(3L))
-                .thenReturn(Optional.of(credencial(3L, "Camila Rojas", "camila@gamehub.test", Rol.CLIENTE, true)));
-        when(jwtServicio.generar(3L, "camila@gamehub.test", "Camila Rojas", Rol.CLIENTE)).thenReturn("token-renovado");
+                .thenReturn(Optional.of(credencial(3L, "Camila Rojas", "camila.levelup@duoc.cl", Rol.CLIENTE, true)));
+        when(jwtServicio.generar(3L, "camila.levelup@duoc.cl", "Camila Rojas", Rol.CLIENTE)).thenReturn("token-renovado");
 
         // When
         SesionRespuesta sesion = servicio.renovar(3L);
@@ -200,7 +200,7 @@ class AutenticacionServiceTest {
     void renovarRechazaUnaCuentaDesactivada() {
         // Given: Pedro tenía un token, pero el administrador lo desactivó
         when(credenciales.findById(4L))
-                .thenReturn(Optional.of(credencial(4L, "Pedro Díaz", "pedro@gamehub.test", Rol.CLIENTE, false)));
+                .thenReturn(Optional.of(credencial(4L, "Pedro Díaz", "pedro.levelup@duoc.cl", Rol.CLIENTE, false)));
 
         // When / Then
         assertThatThrownBy(() -> servicio.renovar(4L))
@@ -227,8 +227,8 @@ class AutenticacionServiceTest {
     void listarDevuelveLasCuentasEnElOrdenDelRepositorio() {
         // Given
         when(credenciales.findAllByOrderByRolAscNombreAsc()).thenReturn(List.of(
-                credencial(1L, "Ana Torres", "ana@gamehub.test", Rol.ADMIN, true),
-                credencial(4L, "Pedro Díaz", "pedro@gamehub.test", Rol.CLIENTE, false)));
+                credencial(1L, "Ana Torres", "ana.levelup@duoc.cl", Rol.ADMIN, true),
+                credencial(4L, "Pedro Díaz", "pedro.levelup@duoc.cl", Rol.CLIENTE, false)));
 
         // When
         List<UsuarioAdminDto> lista = servicio.listar();
@@ -242,9 +242,9 @@ class AutenticacionServiceTest {
     @Test
     void elAdministradorDesactivaOtraCuenta() {
         // Given
-        Credencial camila = credencial(3L, "Camila Rojas", "camila@gamehub.test", Rol.CLIENTE, true);
+        Credencial camila = credencial(3L, "Camila Rojas", "camila.levelup@duoc.cl", Rol.CLIENTE, true);
         when(credenciales.bloquearPorId(1L)).thenReturn(Optional.of(
-                credencial(1L, "Ana", "ana@gamehub.test", Rol.ADMIN, true)));
+                credencial(1L, "Ana", "ana.levelup@duoc.cl", Rol.ADMIN, true)));
         when(credenciales.bloquearPorId(3L)).thenReturn(Optional.of(camila));
 
         // When: Ana (id 1) desactiva a Camila
@@ -269,7 +269,7 @@ class AutenticacionServiceTest {
     void elAdministradorSiPuedeReactivarSuPropiaCuenta() {
         // Given
         when(credenciales.bloquearPorId(1L))
-                .thenReturn(Optional.of(credencial(1L, "Ana Torres", "ana@gamehub.test", Rol.ADMIN, true)));
+                .thenReturn(Optional.of(credencial(1L, "Ana Torres", "ana.levelup@duoc.cl", Rol.ADMIN, true)));
 
         // When
         UsuarioAdminDto resultado = servicio.cambiarActivo(1L, true, 1L);
@@ -282,7 +282,7 @@ class AutenticacionServiceTest {
     void cambiarActivoResponde404SiElUsuarioNoExiste() {
         // Given
         when(credenciales.bloquearPorId(1L)).thenReturn(Optional.of(
-                credencial(1L, "Ana", "ana@gamehub.test", Rol.ADMIN, true)));
+                credencial(1L, "Ana", "ana.levelup@duoc.cl", Rol.ADMIN, true)));
         when(credenciales.bloquearPorId(99L)).thenReturn(Optional.empty());
 
         // When / Then
@@ -299,7 +299,7 @@ class AutenticacionServiceTest {
     }
 
     private static RegistroSolicitud registro(String email) {
-        return new RegistroSolicitud(" Rocío Navarro ", email, "clave1234", "987654321", DatosDeEjemplo.RM, "Ñuñoa",
-                "Av. Irarrázaval 3400");
+        return new RegistroSolicitud(" Rocío ", email, "clave1234", "987654321", DatosDeEjemplo.RM, "Ñuñoa",
+                "Av. Irarrázaval 3400", "123456785", "Navarro", null);
     }
 }

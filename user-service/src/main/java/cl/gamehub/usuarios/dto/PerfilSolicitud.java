@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 public record PerfilSolicitud(
         @Schema(example = "Camila Rojas")
         @NotBlank(message = "Escribe tu nombre.")
-        @Size(min = 3, max = 80, message = "El nombre debe tener entre 3 y 80 caracteres.") String nombre,
+        @Size(min = 3, max = 151, message = "El nombre debe tener entre 3 y 151 caracteres.") String nombre,
         @Schema(example = "912345678")
         @NotBlank(message = "Escribe tu teléfono.")
         @Pattern(regexp = "^9\\d{8}$", message = "El teléfono debe tener 9 dígitos y empezar con 9.") String telefono,
@@ -19,5 +19,5 @@ public record PerfilSolicitud(
         @NotBlank(message = "Elige una comuna.") String comuna,
         @Schema(example = "Av. Italia 1180, depto. 401")
         @NotBlank(message = "Escribe tu dirección de despacho.")
-        @Size(min = 5, max = 150, message = "La dirección debe tener entre 5 y 150 caracteres.") String direccion) {
+        @Size(min = 5, max = 300, message = "La dirección debe tener entre 5 y 300 caracteres.") String direccion) {
 }

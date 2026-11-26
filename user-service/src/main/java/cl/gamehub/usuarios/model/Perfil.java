@@ -19,7 +19,7 @@ public class Perfil {
     @Id
     private Long id;
 
-    @Column(nullable = false, length = 80)
+    @Column(nullable = false, length = 151)
     private String nombre;
 
     /** El correo de la cuenta, para mostrarlo junto a los datos de despacho. Aquí no se cambia. */
@@ -35,7 +35,7 @@ public class Perfil {
     @Column(length = 60)
     private String comuna;
 
-    @Column(length = 150)
+    @Column(length = 300)
     private String direccion;
 
     @Column(nullable = false)

@@ -30,7 +30,7 @@ import org.springframework.http.HttpStatus;
 class PerfilServiceTest {
 
     private static final UsuarioAutenticado CAMILA =
-            new UsuarioAutenticado(3L, "camila@gamehub.test", "Camila Rojas", Rol.CLIENTE);
+            new UsuarioAutenticado(3L, "camila.levelup@duoc.cl", "Camila Rojas", Rol.CLIENTE);
 
     @Mock
     private PerfilRepository perfiles;
@@ -47,7 +47,7 @@ class PerfilServiceTest {
         PerfilDto perfil = servicio.miPerfil(CAMILA);
 
         // Then: el rol no se guarda en user-service, sale del token
-        assertThat(perfil).isEqualTo(new PerfilDto(3L, "Camila Rojas", "camila@gamehub.test", "912345678",
+        assertThat(perfil).isEqualTo(new PerfilDto(3L, "Camila Rojas", "camila.levelup@duoc.cl", "912345678",
                 DatosDeEjemplo.RM, "Ñuñoa", "Av. Los Aromos 1450, depto. 32", Rol.CLIENTE));
     }
 
@@ -55,7 +55,7 @@ class PerfilServiceTest {
     void miPerfilResponde404SiLaCuentaNoTienePerfil() {
         // Given
         when(perfiles.findById(99L)).thenReturn(Optional.empty());
-        UsuarioAutenticado sinPerfil = new UsuarioAutenticado(99L, "nadie@gamehub.test", "Nadie", Rol.CLIENTE);
+        UsuarioAutenticado sinPerfil = new UsuarioAutenticado(99L, "nadie.levelup@duoc.cl", "Nadie", Rol.CLIENTE);
 
         // When / Then
         assertThatThrownBy(() -> servicio.miPerfil(sinPerfil))
@@ -81,7 +81,7 @@ class PerfilServiceTest {
         assertThat(actualizado.telefono()).isEqualTo("998877665");
         assertThat(actualizado.comuna()).isEqualTo("Providencia");
         assertThat(actualizado.direccion()).isEqualTo("Av. Italia 1180");
-        assertThat(actualizado.email()).isEqualTo("camila@gamehub.test");
+        assertThat(actualizado.email()).isEqualTo("camila.levelup@duoc.cl");
         assertThat(actualizado.rol()).isEqualTo(Rol.CLIENTE);
         assertThat(perfil.getActualizadoEn()).isAfter(antes);
     }
@@ -108,7 +108,7 @@ class PerfilServiceTest {
         PerfilDto creado = servicio.crear(nuevo(18L));
 
         // Then: en las rutas internas no hay token, así que el rol va null
-        assertThat(creado).isEqualTo(new PerfilDto(18L, "Rocío Navarro", "rocio@gamehub.test", "987654321",
+        assertThat(creado).isEqualTo(new PerfilDto(18L, "Rocío Navarro", "rocio.levelup@duoc.cl", "987654321",
                 DatosDeEjemplo.RM, "Ñuñoa", "Av. Irarrázaval 3400", null));
     }
 
@@ -151,12 +151,12 @@ class PerfilServiceTest {
     }
 
     private static Perfil camila() {
-        return new Perfil(3L, "Camila Rojas", "camila@gamehub.test", "912345678", DatosDeEjemplo.RM, "Ñuñoa",
+        return new Perfil(3L, "Camila Rojas", "camila.levelup@duoc.cl", "912345678", DatosDeEjemplo.RM, "Ñuñoa",
                 "Av. Los Aromos 1450, depto. 32");
     }
 
     private static NuevoPerfilSolicitud nuevo(Long id) {
-        return new NuevoPerfilSolicitud(id, "Rocío Navarro", "rocio@gamehub.test", "987654321", DatosDeEjemplo.RM,
+        return new NuevoPerfilSolicitud(id, "Rocío Navarro", "rocio.levelup@duoc.cl", "987654321", DatosDeEjemplo.RM,
                 "Ñuñoa", "Av. Irarrázaval 3400");
     }
 }

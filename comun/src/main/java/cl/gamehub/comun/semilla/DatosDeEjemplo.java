@@ -39,23 +39,23 @@ public final class DatosDeEjemplo {
     }
 
     public static final List<UsuarioEjemplo> USUARIOS = List.of(
-            new UsuarioEjemplo(1, "Ana Torres", "ana@gamehub.test", "ADMIN", true, "911111111", RM, "Santiago", "Av. Libertador Bernardo O'Higgins 1234", 400),
-            new UsuarioEjemplo(2, "Luis Soto", "luis@gamehub.test", "VENDEDOR", true, "922222222", RM, "Santiago", "San Diego 850", 380),
-            new UsuarioEjemplo(3, "Camila Rojas", "camila@gamehub.test", "CLIENTE", true, "912345678", RM, "Ñuñoa", "Av. Los Aromos 1450, depto. 32", 300),
-            new UsuarioEjemplo(4, "Pedro Díaz", "pedro@gamehub.test", "CLIENTE", false, "933333333", "Región de Valparaíso", "Viña del Mar", "Calle Quillota 875", 250),
-            new UsuarioEjemplo(5, "Martina Castro", "martina@gamehub.test", "CLIENTE", true, "944444441", RM, "Providencia", "Av. Providencia 2150, depto. 504", 200),
-            new UsuarioEjemplo(6, "Joaquín Reyes", "joaquin@gamehub.test", "CLIENTE", true, "944444442", "Región de Valparaíso", "Valparaíso", "Calle Esmeralda 1020", 190),
-            new UsuarioEjemplo(7, "Fernanda Pino", "fernanda@gamehub.test", "CLIENTE", true, "944444443", "Región del Biobío", "Concepción", "Calle Barros Arana 640", 180),
-            new UsuarioEjemplo(8, "Ignacio Mella", "ignacio@gamehub.test", "CLIENTE", true, "944444444", RM, "Maipú", "Av. Pajaritos 3300", 120),
-            new UsuarioEjemplo(9, "Paula Rivas", "paula@gamehub.test", "CLIENTE", true, "944444445", RM, "La Florida", "Av. Vicuña Mackenna 7110", 110),
-            new UsuarioEjemplo(10, "Andrés Vidal", "andres@gamehub.test", "CLIENTE", true, "944444446", "Región de Coquimbo", "La Serena", "Av. Francisco de Aguirre 455", 100),
-            new UsuarioEjemplo(11, "Rodrigo Muñoz", "rodrigo@gamehub.test", "CLIENTE", true, "944444447", RM, "Las Condes", "Av. Apoquindo 4500, of. 12", 90),
-            new UsuarioEjemplo(12, "Matías Fuentes", "matias@gamehub.test", "CLIENTE", true, "944444448", RM, "Puente Alto", "Av. Concha y Toro 1500", 60),
-            new UsuarioEjemplo(13, "Valentina Soto", "valentina@gamehub.test", "CLIENTE", true, "944444449", "Región de La Araucanía", "Temuco", "Av. Alemania 870", 50),
-            new UsuarioEjemplo(14, "Javiera Lagos", "javiera@gamehub.test", "CLIENTE", true, "955555551", RM, "Providencia", "Av. Italia 1180", 40),
-            new UsuarioEjemplo(15, "Tomás Herrera", "tomas@gamehub.test", "CLIENTE", true, "955555552", "Región de Antofagasta", "Antofagasta", "Av. Grecia 1520", 30),
-            new UsuarioEjemplo(16, "Diego Pérez", "diego@gamehub.test", "CLIENTE", true, "955555553", RM, "Santiago", "Calle Agustinas 1070", 70),
-            new UsuarioEjemplo(17, "Sofía Vera", "sofia@gamehub.test", "CLIENTE", true, "955555554", "Región de Valparaíso", "Quilpué", "Av. Los Carrera 1900", 80));
+            new UsuarioEjemplo(1, "Ana Torres", "ana.levelup@duoc.cl", "ADMIN", true, "911111111", RM, "Santiago", "Av. Libertador Bernardo O'Higgins 1234", 400),
+            new UsuarioEjemplo(2, "Luis Soto", "luis.levelup@duoc.cl", "VENDEDOR", true, "922222222", RM, "Santiago", "San Diego 850", 380),
+            new UsuarioEjemplo(3, "Camila Rojas", "camila.levelup@duoc.cl", "CLIENTE", true, "912345678", RM, "Ñuñoa", "Av. Los Aromos 1450, depto. 32", 300),
+            new UsuarioEjemplo(4, "Pedro Díaz", "pedro.levelup@duoc.cl", "CLIENTE", false, "933333333", "Región de Valparaíso", "Viña del Mar", "Calle Quillota 875", 250),
+            new UsuarioEjemplo(5, "Martina Castro", "martina.levelup@duoc.cl", "CLIENTE", true, "944444441", RM, "Providencia", "Av. Providencia 2150, depto. 504", 200),
+            new UsuarioEjemplo(6, "Joaquín Reyes", "joaquin.levelup@duoc.cl", "CLIENTE", true, "944444442", "Región de Valparaíso", "Valparaíso", "Calle Esmeralda 1020", 190),
+            new UsuarioEjemplo(7, "Fernanda Pino", "fernanda.levelup@duoc.cl", "CLIENTE", true, "944444443", "Región del Biobío", "Concepción", "Calle Barros Arana 640", 180),
+            new UsuarioEjemplo(8, "Ignacio Mella", "ignacio.levelup@duoc.cl", "CLIENTE", true, "944444444", RM, "Maipú", "Av. Pajaritos 3300", 120),
+            new UsuarioEjemplo(9, "Paula Rivas", "paula.levelup@duoc.cl", "CLIENTE", true, "944444445", RM, "La Florida", "Av. Vicuña Mackenna 7110", 110),
+            new UsuarioEjemplo(10, "Andrés Vidal", "andres.levelup@duoc.cl", "CLIENTE", true, "944444446", "Región de Coquimbo", "La Serena", "Av. Francisco de Aguirre 455", 100),
+            new UsuarioEjemplo(11, "Rodrigo Muñoz", "rodrigo.levelup@duoc.cl", "CLIENTE", true, "944444447", RM, "Las Condes", "Av. Apoquindo 4500, of. 12", 90),
+            new UsuarioEjemplo(12, "Matías Fuentes", "matias.levelup@duoc.cl", "CLIENTE", true, "944444448", RM, "Puente Alto", "Av. Concha y Toro 1500", 60),
+            new UsuarioEjemplo(13, "Valentina Soto", "valentina.levelup@duoc.cl", "CLIENTE", true, "944444449", "Región de La Araucanía", "Temuco", "Av. Alemania 870", 50),
+            new UsuarioEjemplo(14, "Javiera Lagos", "javiera.levelup@duoc.cl", "CLIENTE", true, "955555551", RM, "Providencia", "Av. Italia 1180", 40),
+            new UsuarioEjemplo(15, "Tomás Herrera", "tomas.levelup@duoc.cl", "CLIENTE", true, "955555552", "Región de Antofagasta", "Antofagasta", "Av. Grecia 1520", 30),
+            new UsuarioEjemplo(16, "Diego Pérez", "diego.levelup@duoc.cl", "CLIENTE", true, "955555553", RM, "Santiago", "Calle Agustinas 1070", 70),
+            new UsuarioEjemplo(17, "Sofía Vera", "sofia.levelup@duoc.cl", "CLIENTE", true, "955555554", "Región de Valparaíso", "Quilpué", "Av. Los Carrera 1900", 80));
 
     // ---------- Catálogo (category-service, product-service e inventory-service) ----------
 

@@ -34,6 +34,16 @@ public class AdminUsuarioController {
         this.servicio = servicio;
     }
 
+    public record Alta(@jakarta.validation.constraints.NotNull @Valid cl.gamehub.auth.dto.RegistroSolicitud cuenta,
+                       @jakarta.validation.constraints.NotNull Rol rol) { }
+
+    @org.springframework.web.bind.annotation.PostMapping
+    @Operation(summary = "Crea una cuenta con el rol indicado, sin iniciar sesión en ella")
+    public ResponseEntity<UsuarioAdminDto> crear(@AuthenticationPrincipal UsuarioAutenticado yo,
+                                                  @Valid @RequestBody Alta solicitud) {
+        return ResponseEntity.status(201).body(servicio.crearDesdeAdmin(yo.id(), solicitud.cuenta(), solicitud.rol()));
+    }
+
     @GetMapping
     @Operation(summary = "Lista las cuentas con su rol y estado",
             description = "Ordenadas por rol (ADMIN, CLIENTE, VENDEDOR) y, dentro de cada rol, por nombre.")

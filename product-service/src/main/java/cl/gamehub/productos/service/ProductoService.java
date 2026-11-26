@@ -158,7 +158,7 @@ public class ProductoService {
         LocalDate hoy = LocalDate.now();
         return productos.findByIdInOrderByIdAsc(ids).stream()
                 .map(p -> new ProductoInternoDto(p.getId(), p.getSku(), p.getNombre(), p.getImagen(),
-                        p.precioVigente(hoy), p.precioNormalVigente(hoy), p.isActivo()))
+                        pesos(p.precioVigente(hoy)), pesos(p.precioNormalVigente(hoy)), p.isActivo()))
                 .toList();
     }
 
@@ -205,8 +205,13 @@ public class ProductoService {
         }
     }
 
+    // Catálogo con centésimas; las líneas de las boletas se cobran al peso entero más cercano.
+    private static Integer pesos(java.math.BigDecimal valor) {
+        return valor == null ? null : valor.setScale(0, java.math.RoundingMode.HALF_UP).intValueExact();
+    }
+
     private static void validarPrecios(ProductoSolicitud s) {
-        if (s.precioNormal() != null && s.precioNormal() <= s.precio()) {
+        if (s.precioNormal() != null && s.precioNormal().compareTo(s.precio()) <= 0) {
             throw ApiException.regla("El precio normal debe ser mayor que el precio de oferta.");
         }
     }

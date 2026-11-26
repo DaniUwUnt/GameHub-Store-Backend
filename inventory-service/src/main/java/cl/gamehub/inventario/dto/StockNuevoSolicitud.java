@@ -12,7 +12,7 @@ public record StockNuevoSolicitud(
         @NotNull(message = "Indica el id del producto.") Long productoId,
         @Schema(example = "KB-NIM-MINI")
         @NotBlank(message = "Escribe el SKU.")
-        @Size(max = 30, message = "El SKU tiene hasta 30 caracteres.") String sku,
+        @Size(max = 255, message = "El SKU tiene hasta 255 caracteres.") String sku,
         @Schema(example = "Teclado mecánico Nimbo Mini")
         @NotBlank(message = "Escribe el nombre del producto.")
         @Size(max = 120, message = "El nombre tiene hasta 120 caracteres.") String nombre,

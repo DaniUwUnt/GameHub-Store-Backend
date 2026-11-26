@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record UsuarioAdminDto(
         @Schema(example = "4") Long id,
         @Schema(example = "Pedro Díaz") String nombre,
-        @Schema(example = "pedro@gamehub.test") String email,
+        @Schema(example = "pedro.levelup@duoc.cl") String email,
         @Schema(example = "CLIENTE") Rol rol,
         @Schema(example = "false") boolean activo,
         @Schema(example = "2026-03-06T11:00:00") LocalDateTime creadoEn) {

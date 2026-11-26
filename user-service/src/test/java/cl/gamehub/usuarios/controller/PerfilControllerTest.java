@@ -58,7 +58,7 @@ class PerfilControllerTest {
         // Cualquier rol tiene perfil: Ana es la administradora
         mvc.perform(get("/api/v1/usuarios/perfil").header("Authorization", token(1L, Rol.ADMIN)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("ana@gamehub.test"))
+                .andExpect(jsonPath("$.email").value("ana.levelup@duoc.cl"))
                 .andExpect(jsonPath("$.rol").value("ADMIN"));
     }
 
@@ -80,7 +80,7 @@ class PerfilControllerTest {
         // El checkout ve los datos nuevos; el correo sigue siendo el de la cuenta
         mvc.perform(get("/api/v1/usuarios/perfil").header("Authorization", token(3L, Rol.CLIENTE)))
                 .andExpect(jsonPath("$.direccion").value("Av. Italia 1180, depto. 401"))
-                .andExpect(jsonPath("$.email").value("camila@gamehub.test"));
+                .andExpect(jsonPath("$.email").value("camila.levelup@duoc.cl"));
     }
 
     @Test
@@ -129,8 +129,27 @@ class PerfilControllerTest {
                 .andExpect(jsonPath("$.errores.id").value("Indica el id del usuario."));
     }
 
+    @Test
+    void contactoPublicoRecibeAcusePeroSoloAdminLeeElContenido() throws Exception {
+        mvc.perform(post("/api/v1/contacto").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"nombre\":\"Demo\",\"comentario\":\"Consulta EFT\"}"))
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.comentario").doesNotExist());
+        mvc.perform(get("/api/v1/admin/contacto").header("Authorization", token(3L, Rol.CLIENTE)))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/api/v1/admin/contacto").header("Authorization", token(1L, Rol.ADMIN)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].comentario").value("Consulta EFT"));
+    }
+
+    @Test
+    void contactoRechazaDominioFueraDeLaLista() throws Exception {
+        mvc.perform(post("/api/v1/contacto").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"nombre\":\"Demo\",\"correo\":\"prueba@ejemplo.org\",\"comentario\":\"Hola\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
     private String token(Long id, Rol rol) {
-        return "Bearer " + jwt.generar(id, "prueba@gamehub.test", "Prueba", rol);
+        return "Bearer " + jwt.generar(id, "prueba.levelup@duoc.cl", "Prueba", rol);
     }
 
     private static String perfil(String nombre, String telefono, String direccion) {
@@ -141,7 +160,7 @@ class PerfilControllerTest {
 
     private static String nuevoPerfil(String id) {
         return """
-                {"id":%s,"nombre":"Rocío Navarro","email":"rocio@gamehub.test","telefono":"987654321",
+                {"id":%s,"nombre":"Rocío Navarro","email":"rocio.levelup@duoc.cl","telefono":"987654321",
                  "region":"%s","comuna":"Ñuñoa","direccion":"Av. Irarrázaval 3400"}
                 """.formatted(id, DatosDeEjemplo.RM);
     }

@@ -1,0 +1,36 @@
+name: Verificar tienda y compra
+on:
+  push:
+    branches: [eft-levelup]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Pruebas Spring Boot
+        run: bash mvnw -B -ntp verify
+      - name: Compra a través del Gateway en la demo H2
+        run: |
+          bash scripts/preparar-demo.sh
+          bash scripts/iniciar-demo.sh > arranque-ci.log 2>&1 &
+          servidor=$!
+          trap 'kill "$servidor" 2>/dev/null || true' EXIT
+          python3 scripts/verificar-eft.py | tee comprobacion.txt
+      - name: Conservar resultados sin credenciales
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-spring
+          path: |
+            */target/surefire-reports/TEST-*.xml
+            comprobacion.txt

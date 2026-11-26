@@ -41,7 +41,7 @@ class GarantiaServiceTest {
 
     /** Martina (usuario 5), tal como llega en su token. */
     private static final UsuarioAutenticado MARTINA =
-            new UsuarioAutenticado(5L, "martina@gamehub.test", "Martina Castro", Rol.CLIENTE);
+            new UsuarioAutenticado(5L, "martina.levelup@duoc.cl", "Martina Castro", Rol.CLIENTE);
 
     @Mock
     private GarantiaRepository garantias;

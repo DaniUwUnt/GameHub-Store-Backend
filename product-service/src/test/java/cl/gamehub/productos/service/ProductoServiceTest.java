@@ -76,8 +76,8 @@ class ProductoServiceTest {
 
         // Then: la oferta vigente trae el precio tachado y su último día; el teclado no
         assertThat(lista).extracting(ProductoResumenDto::categoria).containsExactly("Notebooks", "Periféricos");
-        assertThat(lista.getFirst().precio()).isEqualTo(1_149_990);
-        assertThat(lista.getFirst().precioNormal()).isEqualTo(1_299_990);
+        assertThat(lista.getFirst().precio()).isEqualByComparingTo("1149990");
+        assertThat(lista.getFirst().precioNormal()).isEqualByComparingTo("1299990");
         assertThat(lista.getFirst().ofertaHasta()).isEqualTo(HOY.plusDays(20));
         assertThat(lista.get(1).precioNormal()).isNull();
         assertThat(lista.get(1).ofertaHasta()).isNull();
@@ -96,7 +96,7 @@ class ProductoServiceTest {
         ProductoResumenDto dto = servicio.listar(" ").getFirst();
 
         // Then: se cobra el precio normal y ya no se muestra como oferta
-        assertThat(dto.precio()).isEqualTo(1_299_990);
+        assertThat(dto.precio()).isEqualByComparingTo("1299990");
         assertThat(dto.precioNormal()).isNull();
         assertThat(dto.ofertaHasta()).isNull();
     }
@@ -174,7 +174,7 @@ class ProductoServiceTest {
         assertThat(detalle.categoriaSlug()).isEqualTo("notebooks");
         assertThat(detalle.descripcion()).isEqualTo("Notebook de 15,6 pulgadas.");
         assertThat(detalle.especificaciones()).containsExactly(new EspecificacionDto("Memoria", "16 GB DDR5"));
-        assertThat(detalle.precioNormal()).isEqualTo(1_299_990);
+        assertThat(detalle.precioNormal()).isEqualByComparingTo("1299990");
     }
 
     // ---------- Administración ----------
@@ -191,8 +191,8 @@ class ProductoServiceTest {
         ProductoAdminDto dto = servicio.listarTodos().getFirst();
 
         // Then
-        assertThat(dto.precio()).isEqualTo(1_149_990);
-        assertThat(dto.precioNormal()).isEqualTo(1_299_990);
+        assertThat(dto.precio()).isEqualByComparingTo("1149990");
+        assertThat(dto.precioNormal()).isEqualByComparingTo("1299990");
         assertThat(dto.ofertaHasta()).isEqualTo(HOY.minusDays(1));
         assertThat(dto.categoriaId()).isEqualTo(1L);
         assertThat(dto.categoria()).isEqualTo("Notebooks");
@@ -357,7 +357,7 @@ class ProductoServiceTest {
         when(productos.findById(4L)).thenReturn(Optional.of(teclado()));
         when(productos.existsBySkuIgnoreCaseAndIdNot("KB-NIM-TKL2", 4L)).thenReturn(false);
         when(categorias.buscar(4L)).thenReturn(PERIFERICOS);
-        ProductoSolicitud cambios = new ProductoSolicitud("kb-nim-tkl2", "Teclado Nimbo TKL v2", "Nimbo", 4L, 64_990,
+        ProductoSolicitud cambios = new ProductoSolicitud("kb-nim-tkl2", "Teclado Nimbo TKL v2", "Nimbo", 4L, java.math.BigDecimal.valueOf(64_990),
                 null, HOY.plusDays(5), 99, " Switches marrones ", null, " https://cdn.gamehub.test/tkl2.png ", null);
 
         // When
@@ -365,7 +365,7 @@ class ProductoServiceTest {
 
         // Then: el stock que trae el formulario no viaja a inventory-service
         assertThat(dto.sku()).isEqualTo("KB-NIM-TKL2");
-        assertThat(dto.precio()).isEqualTo(64_990);
+        assertThat(dto.precio()).isEqualByComparingTo("64990");
         assertThat(dto.ofertaHasta()).isNull();
         assertThat(dto.resumen()).isEqualTo("Switches marrones");
         assertThat(dto.descripcion()).isNull();
@@ -431,15 +431,15 @@ class ProductoServiceTest {
 
     /** Notebook en oferta: $1.149.990 en vez de $1.299.990 hasta dentro de 20 días. */
     private static Producto notebook() {
-        Producto p = new Producto("NB-KAI-B15", "Notebook gamer Kairo Blade 15", "Kairo", 1L, 1_149_990);
-        p.setPrecioNormal(1_299_990);
+        Producto p = new Producto("NB-KAI-B15", "Notebook gamer Kairo Blade 15", "Kairo", 1L, java.math.BigDecimal.valueOf(1_149_990));
+        p.setPrecioNormal(java.math.BigDecimal.valueOf(1_299_990));
         p.setOfertaHasta(HOY.plusDays(20));
         p.setImagen("notebook");
         return conId(p, 1L);
     }
 
     private static Producto teclado() {
-        Producto p = new Producto("KB-NIM-TKL", "Teclado mecánico Nimbo TKL", "Nimbo", 4L, 59_990);
+        Producto p = new Producto("KB-NIM-TKL", "Teclado mecánico Nimbo TKL", "Nimbo", 4L, java.math.BigDecimal.valueOf(59_990));
         p.setImagen("teclado");
         p.getEspecificaciones().add(new Especificacion("Formato", "TKL (87 teclas)"));
         return conId(p, 4L);
@@ -453,7 +453,7 @@ class ProductoServiceTest {
     /** Formulario con espacios de más, sin imagen, con el resumen en blanco y oferta hasta dentro de 10 días. */
     private static ProductoSolicitud solicitud(String sku, Long categoriaId, Integer precio, Integer precioNormal,
                                                Integer stock) {
-        return new ProductoSolicitud(sku, " Teclado Nimbo Mini ", " Nimbo ", categoriaId, precio, precioNormal,
+        return new ProductoSolicitud(sku, " Teclado Nimbo Mini ", " Nimbo ", categoriaId, java.math.BigDecimal.valueOf(precio), precioNormal == null ? null : java.math.BigDecimal.valueOf(precioNormal),
                 HOY.plusDays(10), stock, "  ", "Teclado compacto de 61 teclas.", null,
                 List.of(new EspecificacionDto(" Formato ", " 60 % ")));
     }

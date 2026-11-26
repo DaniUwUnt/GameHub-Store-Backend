@@ -172,6 +172,6 @@ class PromocionControllerTest {
     }
 
     private String token(Rol rol) {
-        return "Bearer " + jwt.generar(1L, "prueba@gamehub.test", "Prueba", rol);
+        return "Bearer " + jwt.generar(1L, "prueba.levelup@duoc.cl", "Prueba", rol);
     }
 }

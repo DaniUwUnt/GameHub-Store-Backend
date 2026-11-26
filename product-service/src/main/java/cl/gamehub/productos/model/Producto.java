@@ -23,7 +23,7 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, unique = true, length = 255)
     private String sku;
 
     @Column(nullable = false, length = 120)
@@ -47,11 +47,12 @@ public class Producto {
     private String descripcion;
 
     /** Precio que se cobra (en pesos, sin decimales). */
-    @Column(nullable = false)
-    private int precio;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private java.math.BigDecimal precio;
 
     /** Precio sin descuento. Si existe y es mayor que precio, el producto está en oferta. */
-    private Integer precioNormal;
+    @Column(precision = 12, scale = 2)
+    private java.math.BigDecimal precioNormal;
 
     /** Último día de la oferta. Después de esa fecha se vuelve a cobrar el precio normal. */
     private LocalDate ofertaHasta;
@@ -71,7 +72,7 @@ public class Producto {
     protected Producto() {
     }
 
-    public Producto(String sku, String nombre, String marca, Long categoriaId, int precio) {
+    public Producto(String sku, String nombre, String marca, Long categoriaId, java.math.BigDecimal precio) {
         this.sku = sku;
         this.nombre = nombre;
         this.marca = marca;
@@ -80,17 +81,17 @@ public class Producto {
     }
 
     /** Precio que se cobra hoy: si la oferta venció, vuelve el precio normal. */
-    public int precioVigente(LocalDate hoy) {
+    public java.math.BigDecimal precioVigente(LocalDate hoy) {
         return ofertaVencida(hoy) ? precioNormal : precio;
     }
 
     /** Precio tachado que se muestra junto al de oferta, o null si hoy no hay oferta. */
-    public Integer precioNormalVigente(LocalDate hoy) {
+    public java.math.BigDecimal precioNormalVigente(LocalDate hoy) {
         return enOferta(hoy) ? precioNormal : null;
     }
 
     public boolean enOferta(LocalDate hoy) {
-        return precioNormal != null && precioNormal > precio && !ofertaVencida(hoy);
+        return precioNormal != null && precioNormal.compareTo(precio) > 0 && !ofertaVencida(hoy);
     }
 
     private boolean ofertaVencida(LocalDate hoy) {
@@ -104,8 +105,8 @@ public class Producto {
     public Long getCategoriaId() { return categoriaId; }
     public String getResumen() { return resumen; }
     public String getDescripcion() { return descripcion; }
-    public int getPrecio() { return precio; }
-    public Integer getPrecioNormal() { return precioNormal; }
+    public java.math.BigDecimal getPrecio() { return precio; }
+    public java.math.BigDecimal getPrecioNormal() { return precioNormal; }
     public LocalDate getOfertaHasta() { return ofertaHasta; }
     public boolean isActivo() { return activo; }
     public String getImagen() { return imagen; }
@@ -117,8 +118,8 @@ public class Producto {
     public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
     public void setResumen(String resumen) { this.resumen = resumen; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public void setPrecio(int precio) { this.precio = precio; }
-    public void setPrecioNormal(Integer precioNormal) { this.precioNormal = precioNormal; }
+    public void setPrecio(java.math.BigDecimal precio) { this.precio = precio; }
+    public void setPrecioNormal(java.math.BigDecimal precioNormal) { this.precioNormal = precioNormal; }
     public void setOfertaHasta(LocalDate ofertaHasta) { this.ofertaHasta = ofertaHasta; }
     public void setActivo(boolean activo) { this.activo = activo; }
     public void setImagen(String imagen) { this.imagen = imagen; }

@@ -30,10 +30,10 @@ La contraseña se genera en la clave `CLAVE_DEMO` del archivo local `.env` cuand
 
 | Correo de prueba | Rol y alcance |
 | --- | --- |
-| ana@gamehub.test | ADMIN: mantenimiento comercial y operación de compras |
-| luis@gamehub.test | VENDEDOR: lista y detalle de productos y órdenes |
-| camila@gamehub.test | CLIENTE: compra, consulta sus órdenes y usa posventa |
-| pedro@gamehub.test | CLIENTE desactivado: el login devuelve 403 |
+| ana.levelup@duoc.cl | ADMIN: mantenimiento comercial y operación de compras |
+| luis.levelup@duoc.cl | VENDEDOR: lista y detalle de productos y órdenes |
+| camila.levelup@duoc.cl | CLIENTE: compra, consulta sus órdenes y usa posventa |
+| pedro.levelup@duoc.cl | CLIENTE desactivado: el login devuelve 403 |
 
 Si conserva una base ya iniciada, conserve también su `.env`: generar otro archivo no cambia las contraseñas almacenadas. No utilice cuentas de demostración en un despliegue público.
 

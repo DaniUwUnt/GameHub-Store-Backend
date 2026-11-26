@@ -25,7 +25,7 @@ public record NuevoDespachoSolicitud(
         @Schema(example = "Camila Rojas")
         @Size(max = 80, message = "El destinatario tiene hasta 80 caracteres.") String destinatario,
         @Schema(example = "Av. Los Aromos 1450, depto. 32")
-        @Size(max = 150, message = "La dirección tiene hasta 150 caracteres.") String direccion,
+        @Size(max = 300, message = "La dirección tiene hasta 300 caracteres.") String direccion,
         @Schema(example = "Ñuñoa")
         @Size(max = 60, message = "La comuna tiene hasta 60 caracteres.") String comuna,
         @Schema(example = "Región Metropolitana de Santiago")

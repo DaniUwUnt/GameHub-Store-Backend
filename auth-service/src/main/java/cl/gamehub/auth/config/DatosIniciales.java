@@ -46,8 +46,8 @@ public class DatosIniciales implements CommandLineRunner {
             return;
         }
         LocalDateTime base = DatosDeEjemplo.base();
-        if (claveDemo.length() < 8 || claveDemo.length() > 60 || !claveDemo.matches(".*[0-9].*")) {
-            throw new IllegalStateException("Define CLAVE_DEMO: 8–60 caracteres y al menos un dígito.");
+        if (claveDemo.length() < 8 || claveDemo.length() > 10 || !claveDemo.matches(".*[0-9].*")) {
+            throw new IllegalStateException("Define CLAVE_DEMO: 8–10 caracteres y al menos un dígito.");
         }
         var usuarios = catalogoEquipo ? DatosDeEjemplo.USUARIOS.subList(0, 4) : DatosDeEjemplo.USUARIOS;
         for (UsuarioEjemplo u : usuarios) {

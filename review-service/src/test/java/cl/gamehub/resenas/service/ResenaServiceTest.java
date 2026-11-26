@@ -41,7 +41,7 @@ class ResenaServiceTest {
 
     /** Camila (usuario 3), tal como llega en su token. */
     private static final UsuarioAutenticado CAMILA =
-            new UsuarioAutenticado(3L, "camila@gamehub.test", "Camila Rojas", Rol.CLIENTE);
+            new UsuarioAutenticado(3L, "camila.levelup@duoc.cl", "Camila Rojas", Rol.CLIENTE);
 
     @Mock
     private ResenaRepository resenas;
