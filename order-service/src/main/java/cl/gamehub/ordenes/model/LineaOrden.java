@@ -27,7 +27,7 @@ public class LineaOrden {
     @Column(nullable = false)
     private Long productoId;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String sku;
 
     @Column(nullable = false, length = 120)

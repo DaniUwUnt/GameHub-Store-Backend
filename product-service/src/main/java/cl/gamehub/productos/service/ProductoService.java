@@ -102,7 +102,8 @@ public class ProductoService {
     @Transactional
     public ProductoAdminDto crear(ProductoSolicitud s) {
         String sku = s.sku().trim().toUpperCase(Locale.ROOT);
-        if (productos.existsBySkuIgnoreCase(sku)) {
+        String clave = Producto.claveDeSku(sku);
+        if (productos.existsBySkuIgnoreCase(clave) || (!clave.equals(sku) && productos.existsBySkuIgnoreCase(sku))) {
             throw ApiException.conflicto("Ya existe un producto con el SKU " + sku + ".");
         }
         CategoriaInternaDto categoria = categoriaElegida(s.categoriaId());
@@ -121,7 +122,8 @@ public class ProductoService {
     public ProductoAdminDto actualizar(Long id, ProductoSolicitud s) {
         Producto p = buscar(id);
         String sku = s.sku().trim().toUpperCase(Locale.ROOT);
-        if (productos.existsBySkuIgnoreCaseAndIdNot(sku, id)) {
+        String clave = Producto.claveDeSku(sku);
+        if (productos.existsBySkuIgnoreCaseAndIdNot(clave, id) || (!clave.equals(sku) && productos.existsBySkuIgnoreCaseAndIdNot(sku, id))) {
             throw ApiException.conflicto("Ya existe otro producto con el SKU " + sku + ".");
         }
         CategoriaInternaDto categoria = categoriaElegida(s.categoriaId());
@@ -158,7 +160,7 @@ public class ProductoService {
         LocalDate hoy = LocalDate.now();
         return productos.findByIdInOrderByIdAsc(ids).stream()
                 .map(p -> new ProductoInternoDto(p.getId(), p.getSku(), p.getNombre(), p.getImagen(),
-                        p.precioVigente(hoy), p.precioNormalVigente(hoy), p.isActivo()))
+                        pesos(p.precioVigente(hoy)), pesos(p.precioNormalVigente(hoy)), p.isActivo()))
                 .toList();
     }
 
@@ -205,14 +207,25 @@ public class ProductoService {
         }
     }
 
+    // Catálogo con centésimas; las líneas de las boletas se cobran al peso entero más cercano.
+    private static Integer pesos(java.math.BigDecimal valor) {
+        if (valor == null) return null;
+        try {
+            return valor.setScale(0, java.math.RoundingMode.HALF_UP).intValueExact();
+        } catch (ArithmeticException e) {
+            throw ApiException.regla("Este importe supera la capacidad técnica del pago simulado en pesos.");
+        }
+    }
+
     private static void validarPrecios(ProductoSolicitud s) {
-        if (s.precioNormal() != null && s.precioNormal() <= s.precio()) {
+        if (s.precioNormal() != null && s.precioNormal().compareTo(s.precio()) <= 0) {
             throw ApiException.regla("El precio normal debe ser mayor que el precio de oferta.");
         }
     }
 
     /** Lo que crear y actualizar hacen igual: oferta, textos, imagen y ficha técnica. */
     private static void completar(Producto p, ProductoSolicitud s, CategoriaInternaDto categoria) {
+        p.setStockCritico(s.stockCritico());
         p.setCategoriaId(categoria.id());
         p.setPrecioNormal(s.precioNormal());
         p.setOfertaHasta(s.precioNormal() == null ? null : s.ofertaHasta());
@@ -238,7 +251,7 @@ public class ProductoService {
     private static ProductoAdminDto admin(Producto p, String categoria) {
         return new ProductoAdminDto(p.getId(), p.getSku(), p.getNombre(), p.getMarca(), p.getCategoriaId(), categoria,
                 p.getPrecio(), p.getPrecioNormal(), p.getOfertaHasta(), p.isActivo(), p.getImagen(), p.getResumen(),
-                p.getDescripcion(), especificaciones(p));
+                p.getDescripcion(), especificaciones(p), p.getStockCritico());
     }
 
     private static LocalDate oferta(Producto p, LocalDate hoy) {

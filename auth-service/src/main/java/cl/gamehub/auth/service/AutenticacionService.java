@@ -64,18 +64,41 @@ public class AutenticacionService {
      */
     @Transactional
     public SesionRespuesta registrar(RegistroSolicitud solicitud) {
+        return sesion(crearCuenta(solicitud, Rol.CLIENTE));
+    }
+
+    @Transactional
+    public UsuarioAdminDto crearDesdeAdmin(Long actorId, RegistroSolicitud solicitud, Rol rol) {
+        Credencial actor = bloquear(actorId);
+        if (!actor.isActivo() || actor.getRol() != Rol.ADMIN) {
+            throw ApiException.prohibido("Se requiere una cuenta administradora activa.");
+        }
+        return admin(crearCuenta(solicitud, rol));
+    }
+
+    private Credencial crearCuenta(RegistroSolicitud solicitud, Rol rol) {
         String email = solicitud.email().trim().toLowerCase(Locale.ROOT);
         if (credenciales.existsByEmailIgnoreCase(email)) {
             throw ApiException.conflicto("Ya existe una cuenta con ese correo. Inicia sesión o usa otro.");
         }
-        Credencial credencial = credenciales.save(
-                new Credencial(solicitud.nombre(), email, codificador.encode(solicitud.clave()), Rol.CLIENTE));
+        if (!cl.gamehub.comun.validacion.Identidad.runValido(solicitud.run())) {
+            throw ApiException.regla("El dígito verificador del RUN no coincide.");
+        }
+        if (!ZonasChile.contiene(solicitud.region(), solicitud.comuna())) {
+            throw ApiException.regla("Esa comuna no pertenece a la región elegida.");
+        }
+        String run = solicitud.run().toUpperCase(Locale.ROOT);
+        if (credenciales.existsByRun(run)) throw ApiException.conflicto("Ya existe una cuenta con ese RUN.");
+        String nombreCompleto = solicitud.nombre().trim() + " " + solicitud.apellidos().trim();
+        Credencial nueva = new Credencial(nombreCompleto, email, codificador.encode(solicitud.clave()), rol);
+        nueva.registrarIdentidad(run, solicitud.nacimiento());
+        Credencial credencial = credenciales.save(nueva);
         // Con IDENTITY el INSERT ya se ejecutó: la credencial tiene id y user-service usa el mismo
         perfiles.crearPerfil(new NuevoPerfilSolicitud(credencial.getId(), credencial.getNombre(),
                 credencial.getEmail(), solicitud.telefono(), solicitud.region(), solicitud.comuna(),
                 solicitud.direccion()));
         log.info("Cuenta creada: usuario {} ({})", credencial.getId(), credencial.getRol());
-        return sesion(credencial);
+        return credencial;
     }
 
     /** Entrega un token nuevo antes de que venza el actual, siempre que la cuenta siga activa. */

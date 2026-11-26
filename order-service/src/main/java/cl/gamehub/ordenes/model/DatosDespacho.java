@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class DatosDespacho {
 
-    @Column(length = 80)
+    @Column(length = 151)
     private String destinatario;
 
     @Column(length = 120)
@@ -22,7 +22,7 @@ public class DatosDespacho {
     @Column(length = 60)
     private String comuna;
 
-    @Column(length = 150)
+    @Column(length = 300)
     private String direccion;
 
     @Column(length = 60)

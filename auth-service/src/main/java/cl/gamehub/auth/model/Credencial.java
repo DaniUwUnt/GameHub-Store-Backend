@@ -25,12 +25,21 @@ public class Credencial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Siempre en minúsculas: Camila@GameHub.test y camila@gamehub.test son la misma cuenta. */
+    /** Siempre en minúsculas: Camila.levelup@duoc.cl y camila.levelup@duoc.cl son la misma cuenta. */
     @Column(nullable = false, unique = true, length = 120)
     private String email;
 
-    @Column(nullable = false, length = 80)
+    @Column(nullable = false, length = 151)
     private String nombre;
+
+    @Column(unique = true, length = 9)
+    private String run;
+    private java.time.LocalDate nacimiento;
+
+    public void registrarIdentidad(String run, java.time.LocalDate nacimiento) {
+        this.run = run;
+        this.nacimiento = nacimiento;
+    }
 
     /** Nunca se guarda la contraseña: solo su hash BCrypt. */
     @Column(nullable = false)

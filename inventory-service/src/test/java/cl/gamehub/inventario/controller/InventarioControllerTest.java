@@ -212,6 +212,6 @@ class InventarioControllerTest {
 
     /** Token de Luis Soto con el rol pedido: el usuario de los movimientos sale del nombre del token. */
     private String token(Rol rol) {
-        return "Bearer " + jwt.generar(2L, "luis@gamehub.test", "Luis Soto", rol);
+        return "Bearer " + jwt.generar(2L, "luis.levelup@duoc.cl", "Luis Soto", rol);
     }
 }

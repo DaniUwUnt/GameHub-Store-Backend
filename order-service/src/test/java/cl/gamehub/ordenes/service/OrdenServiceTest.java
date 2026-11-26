@@ -50,9 +50,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class OrdenServiceTest {
 
-    private static final UsuarioAutenticado CAMILA = new UsuarioAutenticado(3L, "camila@gamehub.test", "Camila Rojas", Rol.CLIENTE);
+    private static final UsuarioAutenticado CAMILA = new UsuarioAutenticado(3L, "camila.levelup@duoc.cl", "Camila Rojas", Rol.CLIENTE);
     private static final ProductoInternoDto TECLADO = new ProductoInternoDto(4L, "KB-NIM-TKL", "Teclado mecánico Nimbo TKL", "teclado", 59990, null, true);
-    private static final DatosDespachoDto DESPACHO = new DatosDespachoDto("Camila Rojas", "camila@gamehub.test", "912345678",
+    private static final DatosDespachoDto DESPACHO = new DatosDespachoDto("Camila Rojas", "camila.levelup@duoc.cl", "912345678",
             "Región Metropolitana de Santiago", "Ñuñoa", "Av. Los Aromos 1450", "", null);
 
     @Mock
@@ -208,7 +208,7 @@ class OrdenServiceTest {
         when(ordenes.findById(6L)).thenReturn(Optional.of(orden(6L, 12L, EstadoOrden.PENDIENTE_PAGO)));
         when(pagos.buscar(List.of(6L))).thenReturn(List.of(new PagoDto(6L, "TRANSFERENCIA", "PENDIENTE", LocalDateTime.now(), "Esperando")));
 
-        OrdenDetalleDto detalle = servicio.detalle(6L, new UsuarioAutenticado(2L, "luis@gamehub.test", "Luis Soto", Rol.VENDEDOR));
+        OrdenDetalleDto detalle = servicio.detalle(6L, new UsuarioAutenticado(2L, "luis.levelup@duoc.cl", "Luis Soto", Rol.VENDEDOR));
 
         assertThat(detalle.despacho()).isNull();
         verify(despachos, never()).buscar(anyList());
@@ -240,7 +240,7 @@ class OrdenServiceTest {
     }
 
     static Orden orden(long id, long usuarioId, EstadoOrden estado) {
-        Orden o = new Orden(usuarioId, "Cliente", new DatosDespacho("Cliente", "c@gamehub.test", "912345678", "RM", "Ñuñoa",
+        Orden o = new Orden(usuarioId, "Cliente", new DatosDespacho("Cliente", "c.levelup@duoc.cl", "912345678", "RM", "Ñuñoa",
                 "Calle 123", null, null), MetodoPago.DEBITO, LocalDateTime.now().minusDays(1));
         o.agregarLinea(4L, "KB-NIM-TKL", "Teclado mecánico Nimbo TKL", "teclado", 59990, 1);
         o.fijarTotales(59990, 0, null);

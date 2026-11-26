@@ -1,0 +1,26 @@
+name: Verificar persistencia MySQL
+on:
+  push:
+    branches: [eft-levelup]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mysql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Guardar y comprobar una fila real en MySQL 8.4
+        run: bash scripts/verificar-mysql.sh | tee persistencia.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidencia-mysql
+          path: persistencia.txt

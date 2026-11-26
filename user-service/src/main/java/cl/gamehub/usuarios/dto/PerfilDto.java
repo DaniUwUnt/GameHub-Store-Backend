@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record PerfilDto(
         @Schema(example = "3") Long id,
         @Schema(example = "Camila Rojas") String nombre,
-        @Schema(example = "camila@gamehub.test") String email,
+        @Schema(example = "camila.levelup@duoc.cl") String email,
         @Schema(example = "912345678") String telefono,
         @Schema(example = "Región Metropolitana de Santiago") String region,
         @Schema(example = "Ñuñoa") String comuna,

@@ -23,8 +23,26 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, unique = true, length = 255)
     private String sku;
+
+    // El índice incluye sólo la clave corta. El cliente siempre recibe el SKU completo.
+    @Column(name = "sku_completo", columnDefinition = "LONGTEXT")
+    private String skuCompleto;
+
+    public static String claveDeSku(String sku) {
+        String normal = sku.strip().toUpperCase(java.util.Locale.ROOT);
+        if (normal.length() <= 30 && !normal.startsWith("!EFT:")) {
+            return normal;
+        }
+        try {
+            byte[] bytes = normal.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            var suma = java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
+            return "!EFT:" + java.util.HexFormat.of().formatHex(suma);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 no disponible", e);
+        }
+    }
 
     @Column(nullable = false, length = 120)
     private String nombre;
@@ -46,12 +64,13 @@ public class Producto {
     @Column(length = 2000)
     private String descripcion;
 
-    /** Precio que se cobra (en pesos, sin decimales). */
-    @Column(nullable = false)
-    private int precio;
+    /** Importe del catálogo (hasta dos centésimas). */
+    @Column(nullable = false, precision = 65, scale = 2)
+    private java.math.BigDecimal precio;
 
     /** Precio sin descuento. Si existe y es mayor que precio, el producto está en oferta. */
-    private Integer precioNormal;
+    @Column(precision = 65, scale = 2)
+    private java.math.BigDecimal precioNormal;
 
     /** Último día de la oferta. Después de esa fecha se vuelve a cobrar el precio normal. */
     private LocalDate ofertaHasta;
@@ -68,11 +87,15 @@ public class Producto {
     @OrderColumn(name = "posicion")
     private List<Especificacion> especificaciones = new ArrayList<>();
 
+    private Integer stockCritico;
+    public Integer getStockCritico() { return stockCritico; }
+    public void setStockCritico(Integer valor) { this.stockCritico = valor; }
+
     protected Producto() {
     }
 
-    public Producto(String sku, String nombre, String marca, Long categoriaId, int precio) {
-        this.sku = sku;
+    public Producto(String sku, String nombre, String marca, Long categoriaId, java.math.BigDecimal precio) {
+        setSku(sku);
         this.nombre = nombre;
         this.marca = marca;
         this.categoriaId = categoriaId;
@@ -80,17 +103,17 @@ public class Producto {
     }
 
     /** Precio que se cobra hoy: si la oferta venció, vuelve el precio normal. */
-    public int precioVigente(LocalDate hoy) {
+    public java.math.BigDecimal precioVigente(LocalDate hoy) {
         return ofertaVencida(hoy) ? precioNormal : precio;
     }
 
     /** Precio tachado que se muestra junto al de oferta, o null si hoy no hay oferta. */
-    public Integer precioNormalVigente(LocalDate hoy) {
+    public java.math.BigDecimal precioNormalVigente(LocalDate hoy) {
         return enOferta(hoy) ? precioNormal : null;
     }
 
     public boolean enOferta(LocalDate hoy) {
-        return precioNormal != null && precioNormal > precio && !ofertaVencida(hoy);
+        return precioNormal != null && precioNormal.compareTo(precio) > 0 && !ofertaVencida(hoy);
     }
 
     private boolean ofertaVencida(LocalDate hoy) {
@@ -98,27 +121,31 @@ public class Producto {
     }
 
     public Long getId() { return id; }
-    public String getSku() { return sku; }
+    public String getSku() { return skuCompleto == null ? sku : skuCompleto; }
     public String getNombre() { return nombre; }
     public String getMarca() { return marca; }
     public Long getCategoriaId() { return categoriaId; }
     public String getResumen() { return resumen; }
     public String getDescripcion() { return descripcion; }
-    public int getPrecio() { return precio; }
-    public Integer getPrecioNormal() { return precioNormal; }
+    public java.math.BigDecimal getPrecio() { return precio; }
+    public java.math.BigDecimal getPrecioNormal() { return precioNormal; }
     public LocalDate getOfertaHasta() { return ofertaHasta; }
     public boolean isActivo() { return activo; }
     public String getImagen() { return imagen; }
     public List<Especificacion> getEspecificaciones() { return especificaciones; }
 
-    public void setSku(String sku) { this.sku = sku; }
+    public void setSku(String sku) {
+        String normal = sku.strip().toUpperCase(java.util.Locale.ROOT);
+        this.sku = claveDeSku(normal);
+        this.skuCompleto = this.sku.equals(normal) ? null : normal;
+    }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setMarca(String marca) { this.marca = marca; }
     public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
     public void setResumen(String resumen) { this.resumen = resumen; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public void setPrecio(int precio) { this.precio = precio; }
-    public void setPrecioNormal(Integer precioNormal) { this.precioNormal = precioNormal; }
+    public void setPrecio(java.math.BigDecimal precio) { this.precio = precio; }
+    public void setPrecioNormal(java.math.BigDecimal precioNormal) { this.precioNormal = precioNormal; }
     public void setOfertaHasta(LocalDate ofertaHasta) { this.ofertaHasta = ofertaHasta; }
     public void setActivo(boolean activo) { this.activo = activo; }
     public void setImagen(String imagen) { this.imagen = imagen; }

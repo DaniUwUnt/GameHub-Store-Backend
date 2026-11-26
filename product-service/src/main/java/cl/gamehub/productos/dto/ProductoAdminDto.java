@@ -12,12 +12,12 @@ public record ProductoAdminDto(
         @Schema(example = "Voltra") String marca,
         @Schema(example = "2") Long categoriaId,
         @Schema(example = "Tarjetas gráficas") String categoria,
-        @Schema(example = "649990") int precio,
-        @Schema(example = "729990") Integer precioNormal,
+        @Schema(example = "649990") java.math.BigDecimal precio,
+        @Schema(example = "729990") java.math.BigDecimal precioNormal,
         @Schema(example = "2026-12-01") LocalDate ofertaHasta,
         @Schema(example = "true") boolean activo,
         @Schema(example = "gpu") String imagen,
         @Schema(example = "12 GB GDDR6X · PCIe 4.0") String resumen,
         @Schema(example = "Tarjeta gráfica de 12 GB con overclock de fábrica y doble ventilador.") String descripcion,
-        List<EspecificacionDto> especificaciones) {
+        List<EspecificacionDto> especificaciones, Integer stockCritico) {
 }

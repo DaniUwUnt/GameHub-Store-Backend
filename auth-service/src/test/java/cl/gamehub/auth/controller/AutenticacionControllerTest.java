@@ -69,7 +69,7 @@ class AutenticacionControllerTest {
     @Test
     void elLoginEntregaUnTokenQueLosDemasServiciosPuedenValidar() throws Exception {
         String json = mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(login("camila@gamehub.test", CLAVE_FIXTURE)))
+                        .content(login("camila.levelup@duoc.cl", CLAVE_FIXTURE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.usuario.id").value(3))
                 .andExpect(jsonPath("$.usuario.nombre").value("Camila Rojas"))
@@ -86,12 +86,12 @@ class AutenticacionControllerTest {
     @Test
     void elLoginRechazaUnaClaveIncorrectaYUnaCuentaDesactivada() throws Exception {
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(login("camila@gamehub.test", "otra-clave1")))
+                        .content(login("camila.levelup@duoc.cl", "otra1234")))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.mensaje").value("Correo o contraseña incorrectos."));
         // Pedro (id 4) está desactivado en los datos de ejemplo
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(login("pedro@gamehub.test", CLAVE_FIXTURE)))
+                        .content(login("pedro.levelup@duoc.cl", CLAVE_FIXTURE)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.mensaje").value("Tu cuenta está desactivada. Escríbenos desde Ayuda para reactivarla."));
     }
@@ -109,20 +109,20 @@ class AutenticacionControllerTest {
     @Test
     void elRegistroCreaUnClienteYLePideElPerfilAUserService() throws Exception {
         String json = mvc.perform(post("/api/v1/auth/registro").contentType(MediaType.APPLICATION_JSON)
-                        .content(registro("Rocio@GameHub.test", "987654321")))
+                        .content(registro("Rocio.levelup@duoc.cl", "987654321")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.usuario.email").value("rocio@gamehub.test"))
+                .andExpect(jsonPath("$.usuario.email").value("rocio.levelup@duoc.cl"))
                 .andExpect(jsonPath("$.usuario.rol").value("CLIENTE"))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
         // user-service recibe el perfil con el mismo id que la credencial nueva
         Number id = JsonPath.read(json, "$.usuario.id");
-        verify(perfiles).crearPerfil(new NuevoPerfilSolicitud(id.longValue(), "Rocío Navarro", "rocio@gamehub.test",
+        verify(perfiles).crearPerfil(new NuevoPerfilSolicitud(id.longValue(), "Rocío Navarro", "rocio.levelup@duoc.cl",
                 "987654321", DatosDeEjemplo.RM, "Ñuñoa", "Av. Irarrázaval 3400"));
         // y la cuenta nueva ya puede iniciar sesión
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(login("rocio@gamehub.test", "clave1234")))
+                        .content(login("rocio.levelup@duoc.cl", "clave1234")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.usuario.id").value(id.intValue()));
     }
@@ -130,7 +130,7 @@ class AutenticacionControllerTest {
     @Test
     void unCorreoConCuentaResponde409SinLlamarAUserService() throws Exception {
         mvc.perform(post("/api/v1/auth/registro").contentType(MediaType.APPLICATION_JSON)
-                        .content(registro("CAMILA@gamehub.test", "987654321")))
+                        .content(registro("CAMILA.levelup@duoc.cl", "987654321")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.mensaje").value("Ya existe una cuenta con ese correo. Inicia sesión o usa otro."));
         verifyNoInteractions(perfiles);
@@ -139,7 +139,7 @@ class AutenticacionControllerTest {
     @Test
     void unTelefonoInvalidoResponde400ConElCampo() throws Exception {
         mvc.perform(post("/api/v1/auth/registro").contentType(MediaType.APPLICATION_JSON)
-                        .content(registro("rocio@gamehub.test", "12345")))
+                        .content(registro("rocio.levelup@duoc.cl", "12345")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errores.telefono").value("El teléfono debe tener 9 dígitos y empezar con 9."));
         verifyNoInteractions(perfiles);
@@ -156,11 +156,11 @@ class AutenticacionControllerTest {
                 .when(perfiles).crearPerfil(any());
 
         mvc.perform(post("/api/v1/auth/registro").contentType(MediaType.APPLICATION_JSON)
-                        .content(registro("sinperfil@gamehub.test", "987654321")))
+                        .content(registro("sinperfil.levelup@duoc.cl", "987654321")))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.mensaje").value("Uno de los servicios de la tienda no responde. Intenta de nuevo en unos minutos."));
 
-        assertThat(credenciales.existsByEmailIgnoreCase("sinperfil@gamehub.test")).isFalse();
+        assertThat(credenciales.existsByEmailIgnoreCase("sinperfil.levelup@duoc.cl")).isFalse();
         assertThat(credenciales.count()).isEqualTo(17);
     }
 
@@ -174,7 +174,7 @@ class AutenticacionControllerTest {
         mvc.perform(post("/api/v1/auth/renovar").header("Authorization", token(3L, Rol.CLIENTE)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.usuario.email").value("camila@gamehub.test"));
+                .andExpect(jsonPath("$.usuario.email").value("camila.levelup@duoc.cl"));
         mvc.perform(post("/api/v1/auth/renovar").header("Authorization", token(4L, Rol.CLIENTE)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.mensaje").value("Tu cuenta está desactivada. Escríbenos desde Ayuda para reactivarla."));
@@ -211,10 +211,10 @@ class AutenticacionControllerTest {
         mvc.perform(patch("/api/v1/admin/usuarios/4/activo").header("Authorization", admin)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"activo\":true}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("pedro@gamehub.test"))
+                .andExpect(jsonPath("$.email").value("pedro.levelup@duoc.cl"))
                 .andExpect(jsonPath("$.activo").value(true));
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(login("pedro@gamehub.test", CLAVE_FIXTURE)))
+                        .content(login("pedro.levelup@duoc.cl", CLAVE_FIXTURE)))
                 .andExpect(status().isOk());
 
         mvc.perform(patch("/api/v1/admin/usuarios/1/activo").header("Authorization", admin)
@@ -243,7 +243,7 @@ class AutenticacionControllerTest {
                     .andExpect(jsonPath("$.rol").value(rol.name()))
                     .andExpect(jsonPath("$.activo").value(true));
             mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                            .content(login("camila@gamehub.test", CLAVE_FIXTURE)))
+                            .content(login("camila.levelup@duoc.cl", CLAVE_FIXTURE)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.usuario.rol").value(rol.name()));
         }
@@ -278,7 +278,14 @@ class AutenticacionControllerTest {
     }
 
     private String token(Long id, Rol rol) {
-        return "Bearer " + jwt.generar(id, "prueba@gamehub.test", "Prueba", rol);
+        return "Bearer " + jwt.generar(id, "prueba.levelup@duoc.cl", "Prueba", rol);
+    }
+
+    @Test
+    void registroNoAceptaUnDigitoVerificadorIncorrecto() throws Exception {
+        mvc.perform(post("/api/v1/auth/registro").contentType(MediaType.APPLICATION_JSON)
+                .content(registro("prueba@gmail.com", "987654321").replace("123456785", "123456789")))
+                .andExpect(status().isBadRequest());
     }
 
     private static String login(String email, String clave) {
@@ -287,7 +294,7 @@ class AutenticacionControllerTest {
 
     private static String registro(String email, String telefono) {
         return """
-                {"nombre":" Rocío Navarro ","email":"%s","clave":"clave1234","telefono":"%s",
+                {"nombre":" Rocío ","apellidos":"Navarro","run":"123456785","email":"%s","clave":"clave1234","telefono":"%s",
                  "region":"%s","comuna":"Ñuñoa","direccion":"Av. Irarrázaval 3400"}
                 """.formatted(email, telefono, DatosDeEjemplo.RM);
     }

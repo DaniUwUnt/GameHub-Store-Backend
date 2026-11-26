@@ -1,0 +1,56 @@
+name: Verificar tienda y compra
+on:
+  push:
+    branches: [eft-levelup]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Pruebas Spring Boot
+        run: bash mvnw -B -ntp verify
+      - uses: actions/checkout@v4
+        with:
+          repository: DaniUwUnt/https---github.com-mastergbros2000-GameHub_Store
+          ref: eft-levelup
+          path: interfaz-evidencia
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Preparar interfaz de la misma entrega
+        working-directory: interfaz-evidencia
+        run: npm ci
+      - name: Compra a través del Gateway en la demo H2
+        run: |
+          bash scripts/preparar-demo.sh
+          bash scripts/iniciar-demo.sh > arranque-ci.log 2>&1 &
+          servidor=$!
+          trap 'kill "$servidor" 2>/dev/null || true' EXIT
+          python3 scripts/verificar-eft.py | tee comprobacion.txt
+          (cd interfaz-evidencia && npm run dev -- --host localhost) > vista-ci.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://localhost:5173/ >/dev/null && break; sleep 1; done
+          mkdir -p capturas
+          for parte in "inicio:/" "catalogo:/productos" "detalle:/detalle/1" "registro:/ingresar" "contacto:/contacto" "blog:/blog"; do
+            pagina="${parte%%:*}"; ruta="${parte#*:}"
+            google-chrome --headless --no-sandbox --hide-scrollbars --window-size=1320,940 --virtual-time-budget=5500 --screenshot="capturas/$pagina.png" "http://localhost:5173$ruta"
+          done
+      - name: Conservar resultados sin credenciales
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-spring
+          path: |
+            */target/surefire-reports/TEST-*.xml
+            comprobacion.txt
+            capturas/

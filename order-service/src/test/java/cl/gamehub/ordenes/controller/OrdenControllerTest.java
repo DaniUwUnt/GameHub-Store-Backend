@@ -36,7 +36,7 @@ class OrdenControllerTest {
 
     private static final String CHECKOUT_INVALIDO = """
             {"lineas":[{"productoId":4,"cantidad":1}],"metodoPago":"DEBITO",
-             "despacho":{"nombre":"Camila Rojas","correo":"camila@gamehub.test","telefono":"12345",
+             "despacho":{"nombre":"Camila Rojas","correo":"camila.levelup@duoc.cl","telefono":"12345",
              "region":"Región Metropolitana de Santiago","comuna":"Ñuñoa","direccion":""}}
             """;
 
@@ -147,6 +147,6 @@ class OrdenControllerTest {
     }
 
     private String token(Long id, Rol rol) {
-        return "Bearer " + jwt.generar(id, "prueba@gamehub.test", "Prueba", rol);
+        return "Bearer " + jwt.generar(id, "prueba.levelup@duoc.cl", "Prueba", rol);
     }
 }

@@ -16,8 +16,8 @@ public record NuevoPerfilSolicitud(
         @NotNull(message = "Indica el id del usuario.") Long id,
         @Schema(example = "Rocío Navarro")
         @NotBlank(message = "Escribe tu nombre.")
-        @Size(min = 3, max = 80, message = "El nombre debe tener entre 3 y 80 caracteres.") String nombre,
-        @Schema(example = "rocio@gamehub.test")
+        @Size(min = 3, max = 151, message = "El nombre debe tener entre 3 y 151 caracteres.") String nombre,
+        @Schema(example = "rocio.levelup@duoc.cl")
         @NotBlank(message = "Escribe tu correo.")
         @Email(message = "Escribe un correo válido.") String email,
         @Schema(example = "987654321")
@@ -29,5 +29,5 @@ public record NuevoPerfilSolicitud(
         @NotBlank(message = "Elige una comuna.") String comuna,
         @Schema(example = "Av. Irarrázaval 3400, depto. 1203")
         @NotBlank(message = "Escribe tu dirección de despacho.")
-        @Size(min = 5, max = 150, message = "La dirección debe tener entre 5 y 150 caracteres.") String direccion) {
+        @Size(min = 5, max = 300, message = "La dirección debe tener entre 5 y 300 caracteres.") String direccion) {
 }

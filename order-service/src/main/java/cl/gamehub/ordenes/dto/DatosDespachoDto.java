@@ -9,8 +9,8 @@ import jakarta.validation.constraints.Size;
 public record DatosDespachoDto(
         @Schema(example = "Camila Rojas")
         @NotBlank(message = "Escribe el nombre de quien recibe.")
-        @Size(min = 3, max = 80, message = "El nombre debe tener entre 3 y 80 caracteres.") String nombre,
-        @Schema(example = "camila@gamehub.test")
+        @Size(min = 3, max = 151, message = "El nombre debe tener entre 3 y 151 caracteres.") String nombre,
+        @Schema(example = "camila.levelup@duoc.cl")
         @NotBlank(message = "Escribe el correo.") @Email(message = "Escribe un correo válido.") String correo,
         @Schema(example = "912345678")
         @NotBlank(message = "Escribe el teléfono.")
@@ -19,7 +19,7 @@ public record DatosDespachoDto(
         @Schema(example = "Ñuñoa") @NotBlank(message = "Elige una comuna.") String comuna,
         @Schema(example = "Av. Los Aromos 1450")
         @NotBlank(message = "Escribe la dirección de despacho.")
-        @Size(min = 5, max = 150, message = "La dirección debe tener entre 5 y 150 caracteres.") String direccion,
+        @Size(min = 5, max = 300, message = "La dirección debe tener entre 5 y 300 caracteres.") String direccion,
         @Schema(example = "Depto. 32") @Size(max = 60) String depto,
         @Schema(example = "Dejar en conserjería") @Size(max = 200) String indicaciones) {
 }

@@ -148,6 +148,6 @@ class PagoControllerTest {
     }
 
     private String token(Long id, Rol rol) {
-        return "Bearer " + jwt.generar(id, "prueba@gamehub.test", "Prueba", rol);
+        return "Bearer " + jwt.generar(id, "prueba.levelup@duoc.cl", "Prueba", rol);
     }
 }

@@ -8,7 +8,7 @@ if [[ ! -e .env ]]; then
         printf 'MYSQL_ROOT_PASSWORD=%s\n' "$(openssl rand -hex 20)"
         printf 'JWT_SECRETO=%s\n' "$(openssl rand -hex 32)"
         printf 'CLAVE_INTERNA=%s\n' "$(openssl rand -hex 32)"
-        printf 'CLAVE_DEMO=Gh1%s\n' "$(openssl rand -hex 8)"
+        printf 'CLAVE_DEMO=G1%s\n' "$(openssl rand -hex 4)"
         printf 'CORS_ORIGENES=http://localhost:5173,http://127.0.0.1:5173\nGATEWAY_PORT=8080\n'
     } > .env
 fi

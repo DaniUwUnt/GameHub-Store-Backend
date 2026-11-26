@@ -45,8 +45,8 @@ public class DatosIniciales implements CommandLineRunner {
         if (catalogoEquipo) {
             for (CatalogoEquipo.Ficha f : CatalogoEquipo.PRODUCTOS) {
                 ProductoEjemplo e = f.producto();
-                Producto producto = new Producto(e.sku(), e.nombre(), f.marca(), e.categoriaId(), e.precio());
-                producto.setPrecioNormal(e.precioNormal());
+                Producto producto = new Producto(e.sku(), e.nombre(), f.marca(), e.categoriaId(), java.math.BigDecimal.valueOf(e.precio()));
+                producto.setPrecioNormal(e.precioNormal() == null ? null : java.math.BigDecimal.valueOf(e.precioNormal()));
                 if (e.precioNormal() != null) producto.setOfertaHasta(hoy.plusDays(90));
                 producto.setImagen(e.imagen());
                 producto.setResumen(f.descripcion());
@@ -61,8 +61,8 @@ public class DatosIniciales implements CommandLineRunner {
         }
         for (ProductoEjemplo e : DatosDeEjemplo.PRODUCTOS) {
             Ficha ficha = ficha(e.sku());
-            Producto p = new Producto(e.sku(), e.nombre(), ficha.marca(), e.categoriaId(), e.precio());
-            p.setPrecioNormal(e.precioNormal());
+            Producto p = new Producto(e.sku(), e.nombre(), ficha.marca(), e.categoriaId(), java.math.BigDecimal.valueOf(e.precio()));
+            p.setPrecioNormal(e.precioNormal() == null ? null : java.math.BigDecimal.valueOf(e.precioNormal()));
             if (e.precioNormal() != null) {
                 p.setOfertaHasta(hoy.plusDays(20));
             }

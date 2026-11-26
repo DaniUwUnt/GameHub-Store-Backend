@@ -50,10 +50,10 @@ public class Despacho {
     /** Solo cuando llega a ENTREGADO. */
     private LocalDateTime entregadoEn;
 
-    @Column(length = 80)
+    @Column(length = 151)
     private String destinatario;
 
-    @Column(length = 150)
+    @Column(length = 300)
     private String direccion;
 
     @Column(length = 60)

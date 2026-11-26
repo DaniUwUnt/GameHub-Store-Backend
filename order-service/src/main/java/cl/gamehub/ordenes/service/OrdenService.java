@@ -86,8 +86,8 @@ public class OrdenService {
                 throw ApiException.conflicto("No hay stock suficiente de " + p.nombre() + ": quedan " + disponible + " unidades.");
             }
             orden.agregarLinea(p.id(), p.sku(), p.nombre(), p.imagen(), p.precio(), linea.cantidad());
-            int importe = p.precio() * linea.cantidad();
-            subtotal += importe;
+            int importe = ImportesPesos.multiplicar(p.precio(), linea.cantidad());
+            subtotal = ImportesPesos.sumar(subtotal, importe);
             if (p.precioNormal() == null) baseCupon += importe;
         }
 
@@ -199,7 +199,7 @@ public class OrdenService {
         DatosDespachoDto datos = new DatosDespachoDto(d.getDestinatario(), d.getCorreo(), d.getTelefono(), d.getRegion(),
                 d.getComuna(), d.getDireccion(), d.getDepto(), d.getIndicaciones());
         List<LineaOrdenDto> lineas = o.getLineas().stream()
-                .map(l -> new LineaOrdenDto(l.getProductoId(), l.getNombre(), l.getImagen(), l.getPrecioUnitario(),
+                .map(l -> new LineaOrdenDto(l.getProductoId(), l.getSku(), l.getNombre(), l.getImagen(), l.getPrecioUnitario(),
                         l.getCantidad(), l.getSubtotal()))
                 .toList();
         return new OrdenDetalleDto(o.getId(), o.getNumero(), o.getCreadaEn(), o.getEstado(), o.getCliente(),
