@@ -39,5 +39,5 @@ public record ProductoSolicitud(
         @Size(max = 500, message = "La descripción tiene hasta 500 caracteres.") String descripcion,
         @Schema(example = "teclado", description = "Vacío: se usa la ilustración de la categoría")
         @Size(max = 255, message = "La imagen tiene hasta 255 caracteres.") String imagen,
-        @Valid List<EspecificacionDto> especificaciones) {
+        @Valid List<EspecificacionDto> especificaciones, @PositiveOrZero(message="El stock crítico no puede ser negativo.") Integer stockCritico) {
 }

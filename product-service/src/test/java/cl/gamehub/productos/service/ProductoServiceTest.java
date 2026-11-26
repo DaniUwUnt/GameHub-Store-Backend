@@ -358,7 +358,7 @@ class ProductoServiceTest {
         when(productos.existsBySkuIgnoreCaseAndIdNot("KB-NIM-TKL2", 4L)).thenReturn(false);
         when(categorias.buscar(4L)).thenReturn(PERIFERICOS);
         ProductoSolicitud cambios = new ProductoSolicitud("kb-nim-tkl2", "Teclado Nimbo TKL v2", "Nimbo", 4L, java.math.BigDecimal.valueOf(64_990),
-                null, HOY.plusDays(5), 99, " Switches marrones ", null, " https://cdn.gamehub.test/tkl2.png ", null);
+                null, HOY.plusDays(5), 99, " Switches marrones ", null, " https://cdn.gamehub.test/tkl2.png ", null, null);
 
         // When
         ProductoAdminDto dto = servicio.actualizar(4L, cambios);
@@ -455,7 +455,7 @@ class ProductoServiceTest {
                                                Integer stock) {
         return new ProductoSolicitud(sku, " Teclado Nimbo Mini ", " Nimbo ", categoriaId, java.math.BigDecimal.valueOf(precio), precioNormal == null ? null : java.math.BigDecimal.valueOf(precioNormal),
                 HOY.plusDays(10), stock, "  ", "Teclado compacto de 61 teclas.", null,
-                List.of(new EspecificacionDto(" Formato ", " 60 % ")));
+                List.of(new EspecificacionDto(" Formato ", " 60 % ")), null);
     }
 
     private static ConteoCategoria fila(Long categoriaId, Long cantidad) {

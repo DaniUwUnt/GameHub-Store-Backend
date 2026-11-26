@@ -218,6 +218,7 @@ public class ProductoService {
 
     /** Lo que crear y actualizar hacen igual: oferta, textos, imagen y ficha técnica. */
     private static void completar(Producto p, ProductoSolicitud s, CategoriaInternaDto categoria) {
+        p.setStockCritico(s.stockCritico());
         p.setCategoriaId(categoria.id());
         p.setPrecioNormal(s.precioNormal());
         p.setOfertaHasta(s.precioNormal() == null ? null : s.ofertaHasta());
@@ -243,7 +244,7 @@ public class ProductoService {
     private static ProductoAdminDto admin(Producto p, String categoria) {
         return new ProductoAdminDto(p.getId(), p.getSku(), p.getNombre(), p.getMarca(), p.getCategoriaId(), categoria,
                 p.getPrecio(), p.getPrecioNormal(), p.getOfertaHasta(), p.isActivo(), p.getImagen(), p.getResumen(),
-                p.getDescripcion(), especificaciones(p));
+                p.getDescripcion(), especificaciones(p), p.getStockCritico());
     }
 
     private static LocalDate oferta(Producto p, LocalDate hoy) {

@@ -46,7 +46,7 @@ public class Producto {
     @Column(length = 2000)
     private String descripcion;
 
-    /** Precio que se cobra (en pesos, sin decimales). */
+    /** Importe del catálogo (hasta dos centésimas). */
     @Column(nullable = false, precision = 12, scale = 2)
     private java.math.BigDecimal precio;
 
@@ -68,6 +68,10 @@ public class Producto {
     @CollectionTable(name = "producto_especificaciones", joinColumns = @JoinColumn(name = "producto_id"))
     @OrderColumn(name = "posicion")
     private List<Especificacion> especificaciones = new ArrayList<>();
+
+    private Integer stockCritico;
+    public Integer getStockCritico() { return stockCritico; }
+    public void setStockCritico(Integer valor) { this.stockCritico = valor; }
 
     protected Producto() {
     }

@@ -84,6 +84,9 @@ public class AutenticacionService {
         if (!cl.gamehub.comun.validacion.Identidad.runValido(solicitud.run())) {
             throw ApiException.regla("El dígito verificador del RUN no coincide.");
         }
+        if (!ZonasChile.contiene(solicitud.region(), solicitud.comuna())) {
+            throw ApiException.regla("Esa comuna no pertenece a la región elegida.");
+        }
         String run = solicitud.run().toUpperCase(Locale.ROOT);
         if (credenciales.existsByRun(run)) throw ApiException.conflicto("Ya existe una cuenta con ese RUN.");
         String nombreCompleto = solicitud.nombre().trim() + " " + solicitud.apellidos().trim();

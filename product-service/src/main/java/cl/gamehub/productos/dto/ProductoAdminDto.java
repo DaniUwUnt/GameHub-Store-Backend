@@ -19,5 +19,5 @@ public record ProductoAdminDto(
         @Schema(example = "gpu") String imagen,
         @Schema(example = "12 GB GDDR6X · PCIe 4.0") String resumen,
         @Schema(example = "Tarjeta gráfica de 12 GB con overclock de fábrica y doble ventilador.") String descripcion,
-        List<EspecificacionDto> especificaciones) {
+        List<EspecificacionDto> especificaciones, Integer stockCritico) {
 }

@@ -1,4 +1,11 @@
-# GameHub Store Backend EP3
+# Level-Up Gamer · Backend de la evaluación final
+
+Continúa la tienda GameHub de la EV3. En Windows, extrae en una carpeta nueva y abre **INICIAR_BACKEND.cmd**, junto a este archivo. Instala JDK 21 y permite la descarga inicial de dependencias Maven. En Linux usa **bash scripts/iniciar-demo.sh**. No mezcles datos o el archivo de configuración de la EV3 con la demo final.
+
+Consulta **http://localhost:8080/api/v1/productos** antes de abrir React. El modo demo usa H2 en disco; Docker Compose utiliza MySQL. En una demo nueva los correos de ejemplo son **ana.levelup@duoc.cl** (ADMIN), **luis.levelup@duoc.cl** (VENDEDOR) y **camila.levelup@duoc.cl** (CLIENTE). La clave se genera en el archivo local .env, variable CLAVE_DEMO. No subas ese archivo.
+
+**Verificar:** Maven Wrapper con el objetivo verify, luego, con la demo local iniciada, python scripts/verificar-eft.py. Esta última comprobación inserta consultas y una compra de prueba; ejecútala sólo contra una base de demo. Los contratos se exploran en http://localhost:8080/swagger-ui.html.
+
 
 Desarrollo Fullstack II · DSY1104  
 Equipo: Brayan Alarcón, Benjamín Bravo y Daniela Salinas.
