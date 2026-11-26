@@ -26,6 +26,24 @@ public class Producto {
     @Column(nullable = false, unique = true, length = 255)
     private String sku;
 
+    // El índice incluye sólo la clave corta. El cliente siempre recibe el SKU completo.
+    @Column(name = "sku_completo", columnDefinition = "LONGTEXT")
+    private String skuCompleto;
+
+    public static String claveDeSku(String sku) {
+        String normal = sku.strip().toUpperCase(java.util.Locale.ROOT);
+        if (normal.length() <= 30 && !normal.startsWith("!EFT:")) {
+            return normal;
+        }
+        try {
+            byte[] bytes = normal.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            var suma = java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
+            return "!EFT:" + java.util.HexFormat.of().formatHex(suma);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 no disponible", e);
+        }
+    }
+
     @Column(nullable = false, length = 120)
     private String nombre;
 
@@ -47,11 +65,11 @@ public class Producto {
     private String descripcion;
 
     /** Importe del catálogo (hasta dos centésimas). */
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(nullable = false, precision = 65, scale = 2)
     private java.math.BigDecimal precio;
 
     /** Precio sin descuento. Si existe y es mayor que precio, el producto está en oferta. */
-    @Column(precision = 12, scale = 2)
+    @Column(precision = 65, scale = 2)
     private java.math.BigDecimal precioNormal;
 
     /** Último día de la oferta. Después de esa fecha se vuelve a cobrar el precio normal. */
@@ -77,7 +95,7 @@ public class Producto {
     }
 
     public Producto(String sku, String nombre, String marca, Long categoriaId, java.math.BigDecimal precio) {
-        this.sku = sku;
+        setSku(sku);
         this.nombre = nombre;
         this.marca = marca;
         this.categoriaId = categoriaId;
@@ -103,7 +121,7 @@ public class Producto {
     }
 
     public Long getId() { return id; }
-    public String getSku() { return sku; }
+    public String getSku() { return skuCompleto == null ? sku : skuCompleto; }
     public String getNombre() { return nombre; }
     public String getMarca() { return marca; }
     public Long getCategoriaId() { return categoriaId; }
@@ -116,7 +134,11 @@ public class Producto {
     public String getImagen() { return imagen; }
     public List<Especificacion> getEspecificaciones() { return especificaciones; }
 
-    public void setSku(String sku) { this.sku = sku; }
+    public void setSku(String sku) {
+        String normal = sku.strip().toUpperCase(java.util.Locale.ROOT);
+        this.sku = claveDeSku(normal);
+        this.skuCompleto = this.sku.equals(normal) ? null : normal;
+    }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setMarca(String marca) { this.marca = marca; }
     public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }

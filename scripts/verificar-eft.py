@@ -56,5 +56,22 @@ def main():
     orden=llamada('POST','/api/v1/ordenes',201,cuerpo,cliente)
     assert any(o['id']==orden['id'] for o in llamada('GET','/api/v1/ordenes/mias',token=cliente))
     assert next(x['stock'] for x in llamada('GET',stock_url) if x['productoId']==pid)==antes-1
+    # El catálogo no impone un largo comercial al SKU ni un máximo arbitrario de nueve cifras.
+    ruta='/api/v1/admin/productos'
+    sku='EFT-'+uuid.uuid4().hex.upper()+'-LARGO'*50
+    categoria=llamada('GET',cat,token=admin)[0]['id']
+    ficha={'sku':sku,'nombre':'Producto de prueba EFT','marca':'EFT','categoriaId':categoria,
+           'precio':'1000000500.34','stock':3}
+    creado=llamada('POST',ruta,201,ficha,admin)
+    assert creado['sku']==sku and str(creado['precio'])=='1000000500.34'
+    llamada('POST',ruta,409,{**ficha,'sku':sku.lower()},admin)
+    solicitud={**cuerpo,'lineas':[{'productoId':creado['id'],'cantidad':3}]}
+    llamada('POST','/api/v1/ordenes',400,solicitud,cliente)
+    solicitud['lineas'][0]['cantidad']=1
+    compra=llamada('POST','/api/v1/ordenes',201,solicitud,cliente)
+    assert compra['total']==1000000500
+    assert any(l['sku']==sku for l in compra['lineas'])
+    llamada('PATCH',ruta+'/'+str(creado['id'])+'/activo',200,{'activo':False},admin)
+    print('OK: SKU de más de 300 caracteres preservado en catálogo e inventario hasta la boleta. Importe grande redondeado sin desbordar el pago.')
     print('OK: roles, renovación, CRUD, contacto y compra con stock persistido. Sólo datos de prueba.')
 if __name__=='__main__': main()

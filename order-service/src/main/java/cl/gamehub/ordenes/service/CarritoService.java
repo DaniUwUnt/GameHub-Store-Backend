@@ -64,8 +64,8 @@ public class CarritoService {
                 valido = false;
                 mensaje = disponible == 0 ? "Este producto se quedó sin stock." : "Solo quedan " + disponible + " unidades.";
             }
-            int importe = p.precio() * linea.cantidad();
-            subtotal += importe;
+            int importe = ImportesPesos.multiplicar(p.precio(), linea.cantidad());
+            subtotal = ImportesPesos.sumar(subtotal, importe);
             if (p.precioNormal() == null) baseCupon += importe;
             resultado.add(new LineaValidadaDto(p.id(), p.nombre(), p.precio(), p.precioNormal(), disponible,
                     linea.cantidad(), alcanza, mensaje));

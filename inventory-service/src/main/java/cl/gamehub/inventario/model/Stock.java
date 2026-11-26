@@ -17,7 +17,7 @@ public class Stock {
     @Id
     private Long productoId;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String sku;
 
     @Column(nullable = false, length = 120)

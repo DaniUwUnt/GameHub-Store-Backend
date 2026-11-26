@@ -17,7 +17,7 @@ import java.util.List;
 public record ProductoSolicitud(
         @Schema(example = "KB-NIM-MINI")
         @NotBlank(message = "Escribe el SKU.")
-        @Size(min = 3, max = 255, message = "El SKU tiene entre 3 y 255 caracteres.") String sku,
+        @Size(min = 3, message = "El SKU necesita al menos tres caracteres.") String sku,
         @Schema(example = "Teclado mecánico Nimbo Mini")
         @NotBlank(message = "Escribe el nombre del producto.")
         @Size(max = 100, message = "El nombre tiene hasta 100 caracteres.") String nombre,
@@ -28,9 +28,9 @@ public record ProductoSolicitud(
         @NotNull(message = "Elige una categoría.") Long categoriaId,
         @Schema(example = "49990")
         @NotNull(message = "Escribe el precio.")
-        @jakarta.validation.constraints.Digits(integer=9, fraction=2) @PositiveOrZero(message = "El precio no puede ser negativo.") java.math.BigDecimal precio,
+        @jakarta.validation.constraints.Digits(integer = 63, fraction = 2, message = "Usa un importe con hasta dos decimales dentro de la precisión de la base de datos.") @PositiveOrZero(message = "El precio no puede ser negativo.") java.math.BigDecimal precio,
         @Schema(example = "54990", description = "Opcional: si viene, el producto queda en oferta hasta ofertaHasta")
-        @jakarta.validation.constraints.Digits(integer=9, fraction=2) @Positive(message = "El precio normal debe ser mayor que cero.") java.math.BigDecimal precioNormal,
+        @jakarta.validation.constraints.Digits(integer = 63, fraction = 2, message = "Usa un importe con hasta dos decimales dentro de la precisión de la base de datos.") @Positive(message = "El precio normal debe ser mayor que cero.") java.math.BigDecimal precioNormal,
         @Schema(example = "2026-12-01") LocalDate ofertaHasta,
         @Schema(example = "10", description = "Stock inicial (solo al crear)")
         @PositiveOrZero(message = "El stock inicial no puede ser negativo.") Integer stock,

@@ -102,7 +102,8 @@ public class ProductoService {
     @Transactional
     public ProductoAdminDto crear(ProductoSolicitud s) {
         String sku = s.sku().trim().toUpperCase(Locale.ROOT);
-        if (productos.existsBySkuIgnoreCase(sku)) {
+        String clave = Producto.claveDeSku(sku);
+        if (productos.existsBySkuIgnoreCase(clave) || (!clave.equals(sku) && productos.existsBySkuIgnoreCase(sku))) {
             throw ApiException.conflicto("Ya existe un producto con el SKU " + sku + ".");
         }
         CategoriaInternaDto categoria = categoriaElegida(s.categoriaId());
@@ -121,7 +122,8 @@ public class ProductoService {
     public ProductoAdminDto actualizar(Long id, ProductoSolicitud s) {
         Producto p = buscar(id);
         String sku = s.sku().trim().toUpperCase(Locale.ROOT);
-        if (productos.existsBySkuIgnoreCaseAndIdNot(sku, id)) {
+        String clave = Producto.claveDeSku(sku);
+        if (productos.existsBySkuIgnoreCaseAndIdNot(clave, id) || (!clave.equals(sku) && productos.existsBySkuIgnoreCaseAndIdNot(sku, id))) {
             throw ApiException.conflicto("Ya existe otro producto con el SKU " + sku + ".");
         }
         CategoriaInternaDto categoria = categoriaElegida(s.categoriaId());
@@ -207,7 +209,12 @@ public class ProductoService {
 
     // Catálogo con centésimas; las líneas de las boletas se cobran al peso entero más cercano.
     private static Integer pesos(java.math.BigDecimal valor) {
-        return valor == null ? null : valor.setScale(0, java.math.RoundingMode.HALF_UP).intValueExact();
+        if (valor == null) return null;
+        try {
+            return valor.setScale(0, java.math.RoundingMode.HALF_UP).intValueExact();
+        } catch (ArithmeticException e) {
+            throw ApiException.regla("Este importe supera la capacidad técnica del pago simulado en pesos.");
+        }
     }
 
     private static void validarPrecios(ProductoSolicitud s) {
